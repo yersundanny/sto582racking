@@ -8,14 +8,36 @@
         body {
             font-family: 'Malgun Gothic', sans-serif;
             background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
+            margin: 0;
             padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
+        /* 제목 및 소개 섹션 */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 800px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 카드 컨테이너 */
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             max-width: 1200px;
             width: 100%;
@@ -31,6 +53,7 @@
             transition: transform 0.2s;
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
 
         .card:hover {
@@ -38,7 +61,7 @@
         }
 
         .image-placeholder {
-            height: 150px;
+            height: 160px;
             background-color: #ddd;
             background-size: cover;
             background-position: center;
@@ -56,6 +79,7 @@
             margin: 0 0 20px 0;
             font-size: 1.1rem;
             font-weight: bold;
+            line-height: 1.4;
         }
 
         .arrow-btn {
@@ -68,62 +92,64 @@
             align-items: center;
             justify-content: center;
             align-self: flex-start;
+            font-size: 0.9rem;
         }
 
-        /* 강조 카드 (Old vs New) */
-        .card.dark {
-            background: #000;
-            color: #fff;
-        }
-        .card.dark .arrow-btn {
-            background: #fff;
-            color: #000;
+        /* 반응형 조절 */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.8rem; }
+            .container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <a href="영상링크주소" class="card">
-        <div class="image-placeholder" style="background-image: url('이미지주소1');"></div>
-        <div class="content">
-            <h3>조립설명 영상</h3>
-            <div class="arrow-btn">➔</div>
-        </div>
-    </a>
+    <div class="header">
+        <h1>GH582 Racking Training Center</h1>
+        <p>이곳은 래킹 작업의 효율성과 안전을 위한 통합 교육 센터입니다.<br>최신 매뉴얼과 실무 영상을 통해 업무 숙련도를 높여보세요.</p>
+    </div>
 
-    <a href="PDF링크주소" class="card">
-        <div class="image-placeholder" style="background-image: url('이미지주소2');"></div>
-        <div class="content">
-            <h3>안전교육 PDF</h3>
-            <div class="arrow-btn">➔</div>
-        </div>
-    </a>
+    <div class="container">
+        <a href="영상링크" class="card">
+            <div class="image-placeholder" style="background-image: url('이미지1');"></div>
+            <div class="content">
+                <h3>조립설명 영상</h3>
+                <div class="arrow-btn">➔</div>
+            </div>
+        </a>
 
-    <a href="재고현황링크" class="card">
-        <div class="image-placeholder" style="background-image: url('이미지주소3');"></div>
-        <div class="content">
-            <h3>재고현황</h3>
-            <div class="arrow-btn">➔</div>
-        </div>
-    </a>
+        <a href="안전교육링크" class="card">
+            <div class="image-placeholder" style="background-image: url('이미지2');"></div>
+            <div class="content">
+                <h3>안전교육 PDF</h3>
+                <div class="arrow-btn">➔</div>
+            </div>
+        </a>
 
-    <a href="비교링크" class="card dark">
-        <div class="image-placeholder" style="background-image: url('이미지주소4');"></div>
-        <div class="content">
-            <h3>Old vs New<br>Comparison</h3>
-            <div class="arrow-btn">➔</div>
-        </div>
-    </a>
+        <a href="재고현황링크" class="card">
+            <div class="image-placeholder" style="background-image: url('이미지3');"></div>
+            <div class="content">
+                <h3>재고현황 현황</h3>
+                <div class="arrow-btn">➔</div>
+            </div>
+        </a>
 
-    <a href="매뉴얼링크" class="card">
-        <div class="image-placeholder" style="background-image: url('이미지주소5');"></div>
-        <div class="content">
-            <h3>매뉴얼 PDF 모음</h3>
-            <div class="arrow-btn">➔</div>
-        </div>
-    </a>
-</div>
+        <a href="비교링크" class="card">
+            <div class="image-placeholder" style="background-image: url('이미지4');"></div>
+            <div class="content">
+                <h3>Old vs New<br>Comparison</h3>
+                <div class="arrow-btn">➔</div>
+            </div>
+        </a>
+
+        <a href="매뉴얼링크" class="card">
+            <div class="image-placeholder" style="background-image: url('이미지5');"></div>
+            <div class="content">
+                <h3>매뉴얼 PDF 모음</h3>
+                <div class="arrow-btn">➔</div>
+            </div>
+        </a>
+    </div>
 
 </body>
 </html>
