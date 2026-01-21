@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GH582 Racking Training Center</title>
+    <title>이케아 코워커를 위한 랙킹 가이드</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,20 +33,21 @@
         }
 
         .header h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 700;
             margin: 0 0 15px 0;
             letter-spacing: -0.04em;
+            word-break: keep-all;
         }
 
         .header p {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: var(--text-gray);
             line-height: 1.6;
             margin: 0;
         }
 
-        /* 컨테이너 레이아웃 (기본: PC 카드형) */
+        /* 컨테이너 레이아웃 (PC 버전: 카드형) */
         .container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -110,10 +111,10 @@
             font-size: 1.2rem;
         }
 
-        /* [심플 모바일 버전 UI] */
+        /* [모바일 버전 UI - 심플 리스트] */
         @media (max-width: 768px) {
             .header { padding: 40px 20px 30px; }
-            .header h1 { font-size: 2rem; }
+            .header h1 { font-size: 1.8rem; }
             
             .container {
                 display: flex;
@@ -132,9 +133,7 @@
                 padding: 5px 10px;
             }
 
-            .card:hover { background-color: #f5f5f5; }
-
-            .image-box { display: none; } /* 모바일에서는 이미지 제거 */
+            .image-box { display: none; }
             
             .content {
                 flex-direction: row;
@@ -147,12 +146,12 @@
             .content h3 {
                 margin: 0;
                 font-size: 1.1rem;
-                font-weight: 400; /* 모바일은 더 심플한 굵기 */
+                font-weight: 400;
             }
 
             .arrow-btn {
                 background: none;
-                color: #ccc; /* 심플한 회색 화살표 */
+                color: #ccc;
                 width: auto;
                 height: auto;
             }
@@ -162,12 +161,12 @@
 <body>
 
     <div class="header">
-        <h1>GH582 Racking Training</h1>
-        <p>이케아 기흥점 랙킹 가이드</p>
+        <h1>이케아 코워커를 위한 랙킹 가이드</h1>
+        <p>현장 작업의 효율성과 안전을 위한 통합 교육 센터입니다.</p>
     </div>
 
     <div class="container">
-        <a href="#" id="dynamic-video-link" class="card">
+        <a href="#" id="dynamic-video-link" class="card" target="_blank">
             <div class="image-box" style="background-image: url('https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=500&q=80');"></div>
             <div class="content">
                 <h3>조립설명 영상 가이드</h3>
@@ -178,46 +177,41 @@
         <a href="Racking Storage Safety Manual.pdf" class="card" target="_blank">
             <div class="image-box" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=500&q=80');"></div>
             <div class="content">
-                <h3>필수 안전교육 PDF</h3>
+                <h3>안전교육 PDF</h3>
                 <div class="arrow-btn">➔</div>
             </div>
         </a>
 
-        <a href="#" class="card">
+        <a href="#" class="card" target="_blank">
             <div class="image-box" style="background-image: url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=500&q=80');"></div>
             <div class="content">
-                <h3>실시간 재고현황</h3>
+                <h3>재고현황 링크</h3>
                 <div class="arrow-btn">➔</div>
             </div>
         </a>
 
-        <a href="#" class="card">
+        <a href="#" class="card" target="_blank">
             <div class="image-box" style="background-image: url('https://images.unsplash.com/photo-1454165833267-028ec2806af2?auto=format&fit=crop&w=500&q=80');"></div>
             <div class="content">
-                <h3>Old vs New Comparison</h3>
+                <h3>old/new 비교</h3>
                 <div class="arrow-btn">➔</div>
             </div>
         </a>
 
-        <a href="#" class="card">
+        <a href="#" class="card" target="_blank">
             <div class="image-box" style="background-image: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=500&q=80');"></div>
             <div class="content">
-                <h3>매뉴얼 PDF 자료실</h3>
+                <h3>매뉴얼 PDF 모음 링크</h3>
                 <div class="arrow-btn">➔</div>
             </div>
         </a>
     </div>
 
     <script>
-        /**
-         * 기기별 유튜브 플레이리스트 링크 전환 스크립트
-         */
         const pcPlaylist = "https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG";
         const mobilePlaylist = "https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77";
         
         const videoLinkElement = document.getElementById('dynamic-video-link');
-        
-        // 모바일 기기 여부 판단
         const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         if (isMobileDevice) {
