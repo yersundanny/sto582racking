@@ -18,7 +18,7 @@
             color: white; transition: all 0.3s ease;
         }
         
-        .card-container { transition: 0.3s; height: 100%; display: flex; flex-direction: column; }
+        .card-container { transition: 0.3s; height: 100%; display: flex; flex-direction: column; cursor: pointer; }
         .card-container:hover { transform: translateY(-4px); }
 
         /* 모바일 심플 리스트 스타일 */
@@ -38,74 +38,101 @@
     <header class="pt-24 pb-16 px-6 max-w-6xl mx-auto text-center">
         <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gray-900 tracking-tight italic">STO 582 Racking Archive</h1>
         <p class="text-gray-600 text-lg leading-relaxed max-w-4xl mx-auto px-4">
-            랙킹에 필요한 필수 문서와 노하우를 한곳에서 빠르고 정확하게 찾아보세요.
+            이케아 코워커를 위한 랙킹 가이드: 필수 문서와 노하우를 한곳에서 확인하세요.
         </p>
     </header>
 
     <section class="bg-[#f4f4f4] py-20 px-6">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 grid-layout">
             
-            <div class="card-container bg-white shadow-sm">
+            <div class="card-container bg-white shadow-sm" onclick="location.href='manuals-list.html'">
                 <div class="h-64 bg-gray-200 overflow-hidden image-wrapper">
-                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=500" class="w-full h-full object-cover" alt="Basic Racking">
+                    <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=500" class="w-full h-full object-cover" alt="Manual Archive">
                 </div>
                 <div class="p-10 flex flex-col justify-between flex-grow content-wrapper">
-                    <h3 class="text-xl font-bold mb-10 text-gray-800 text-left">Basic Racking</h3>
-                    <a href="#" target="_blank" class="arrow-btn"><i class="fas fa-arrow-right"></i></a>
+                    <h3 class="text-xl font-bold mb-10 text-gray-800 text-left">Manual Archive</h3>
+                    <div class="arrow-btn"><i class="fas fa-arrow-right"></i></div>
                 </div>
             </div>
 
-            <div class="card-container bg-white shadow-sm">
+            <div class="card-container bg-white shadow-sm" onclick="openVideoModal()">
                 <div class="h-64 bg-gray-200 overflow-hidden image-wrapper">
                     <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=500" class="w-full h-full object-cover" alt="Assembly Guide">
                 </div>
                 <div class="p-10 flex flex-col justify-between flex-grow content-wrapper">
                     <h3 class="text-xl font-bold mb-10 text-gray-800 text-left">Assembly Guide</h3>
-                    <a href="#" id="video-link" target="_blank" class="arrow-btn">
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <div class="arrow-btn"><i class="fas fa-play"></i></div>
                 </div>
             </div>
 
-            <div class="card-container bg-white shadow-sm">
+            <div class="card-container bg-white shadow-sm" onclick="location.href='safety-main.html'">
                 <div class="h-64 bg-gray-200 overflow-hidden image-wrapper">
                     <img src="https://images.unsplash.com/photo-1590644365607-1c5a519a7a37?auto=format&fit=crop&w=500" class="w-full h-full object-cover" alt="Safety Education">
                 </div>
                 <div class="p-10 flex flex-col justify-between flex-grow content-wrapper">
                     <h3 class="text-xl font-bold mb-10 text-gray-800 text-left">Safety Education</h3>
-                    <a href="safety-main.html" target="_blank" class="arrow-btn"><i class="fas fa-arrow-right"></i></a>
+                    <div class="arrow-btn"><i class="fas fa-arrow-right"></i></div>
                 </div>
             </div>
 
-            <div class="card-container bg-white shadow-sm border-2 border-black">
+            <div class="card-container bg-white shadow-sm border-2 border-black" onclick="location.href='#'">
                 <div class="h-64 bg-gray-200 overflow-hidden image-wrapper">
                     <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=500" class="w-full h-full object-cover" alt="Old vs New">
                 </div>
                 <div class="p-10 flex flex-col justify-between flex-grow bg-black text-white content-wrapper">
                     <h3 class="text-xl font-bold mb-10 text-left">Old vs New<br>Comparison</h3>
-                    <a href="#" target="_blank" class="arrow-btn bg-white text-black"><i class="fas fa-arrow-right text-black"></i></a>
+                    <div class="arrow-btn bg-white text-black"><i class="fas fa-arrow-right text-black"></i></div>
                 </div>
             </div>
 
         </div>
     </section>
 
+    <div id="videoModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-8 shadow-2xl transform transition-all scale-95 opacity-0" id="modalContent">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-900">영상 버전을 선택하세요</h2>
+            <div class="flex flex-col gap-4">
+                <a href="https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG" target="_blank" onclick="closeVideoModal()" class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-lg text-center transition-colors">
+                    🖥️ PC 버전 (가로 영상)
+                </a>
+                <a href="https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77" target="_blank" onclick="closeVideoModal()" class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-lg text-center transition-colors">
+                    📱 모바일 버전 (세로 영상)
+                </a>
+                <button onclick="closeVideoModal()" class="mt-4 text-gray-400 hover:text-gray-600 text-sm font-medium">닫기</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="py-16 text-center text-gray-400 text-sm">
         <p>© 2026 STO 582 Racking Archive. All Rights Reserved.</p>
     </footer>
 
     <script>
-        // 기기별 플레이리스트 자동 전환 로직 유지
-        const pcPlaylist = "https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG";
-        const mobilePlaylist = "https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77";
-        
-        const videoLinkElement = document.getElementById('video-link');
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-            videoLinkElement.href = mobilePlaylist;
-        } else {
-            videoLinkElement.href = pcPlaylist;
+        const modal = document.getElementById('videoModal');
+        const modalContent = document.getElementById('modalContent');
+
+        function openVideoModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeVideoModal();
+            }
         }
     </script>
 
