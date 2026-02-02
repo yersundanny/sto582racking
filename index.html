@@ -10,16 +10,18 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; }
         
+        /* 카드 컨테이너 디자인 복구 */
         .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
+        /* 스케줄 강조 스타일 */
         .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; transition: 0.3s; }
         .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
         .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 99px; }
 
-        /* 비디오 선택 모달 스타일 */
+        /* 비디오 선택 모달 */
         #videoModal { backdrop-filter: blur(4px); transition: 0.3s; }
         .modal-content { transform: scale(0.9); transition: 0.3s; }
         #videoModal.flex .modal-content { transform: scale(1); }
@@ -29,25 +31,28 @@
 
     <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
         <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
-        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest italic">Digital Hub for Racking Specialists</p>
+        <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
+        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">Digital Hub for Racking Specialists</p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-8">
         <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5 shadow-sm">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-bullhorn text-blue-600"></i> Specialist Notice
+                    <i class="fas fa-bullhorn text-blue-600"></i> Live Specialist Notice
                 </h2>
-                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase">Admin</button>
+                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
             </div>
-            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed">공지사항을 동기화 중입니다...</div>
+            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2">공지사항을 동기화 중입니다...</div>
             
             <div id="editorSection" class="hidden mt-4 pt-4 border-t">
-                <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-1 rounded outline-none w-32">
-                <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-2 py-1 rounded font-bold">인증</button>
-                <div id="editTools" class="hidden mt-3">
+                <div class="flex items-center gap-2 mb-3">
+                    <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
+                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold hover:bg-blue-700 transition">인증</button>
+                </div>
+                <div id="editTools" class="hidden">
                     <div id="richEditor" contenteditable="true" class="w-full min-h-[80px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2"></div>
-                    <button id="saveBtn" onclick="saveNotice()" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold">공지 저장 및 업데이트</button>
+                    <button id="saveBtn" onclick="saveNotice()" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장 및 업데이트</button>
                 </div>
             </div>
         </div>
@@ -58,13 +63,13 @@
             <div class="flex justify-between items-end mb-8 text-center md:text-left">
                 <div>
                     <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">This Week Plan</h2>
-                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest">Loading...</p>
+                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest italic">Syncing...</p>
                 </div>
-                <div class="hidden md:block text-[10px] font-bold text-gray-300 uppercase">08:30 - 17:30 Work</div>
+                <div class="hidden md:block text-[10px] font-bold text-gray-300 uppercase tracking-widest">08:30 - 17:30 Work</div>
             </div>
             
             <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
-                <p class="col-span-5 text-center py-10 text-gray-400 italic font-medium">동기화 중...</p>
+                <p class="col-span-5 text-center py-10 text-gray-400 italic font-medium">데이터를 불러오는 중입니다...</p>
             </div>
         </div>
     </section>
@@ -81,7 +86,7 @@
         <div class="card-container" onclick="openVideoModal()">
             <div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Assembly Video</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
+                <div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
@@ -109,6 +114,7 @@
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
+
         <div class="card-container" onclick="location.href='old-vs-new.html'">
             <div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div>
             <div class="p-8 flex justify-between items-center">
@@ -120,9 +126,10 @@
 
     <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6">
         <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
-            <div class="bg-red-600 p-6 text-center text-white">
-                <i class="fab fa-youtube text-4xl mb-2"></i>
-                <h3 class="font-black italic text-lg uppercase tracking-tight">Select Video Format</h3>
+            <div class="bg-red-600 p-8 text-center text-white">
+                <i class="fab fa-youtube text-5xl mb-3"></i>
+                <h3 class="font-black italic text-xl uppercase tracking-tight">Select Format</h3>
+                <p class="text-[10px] font-bold opacity-80 mt-1">STO 582 ASSEMBLY PLAYLIST</p>
             </div>
             <div class="p-6 space-y-3">
                 <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
@@ -131,7 +138,7 @@
                 <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
                     <i class="fas fa-mobile-alt text-red-600"></i> 세로형 영상 (Shorts)
                 </button>
-                <button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Close</button>
+                <button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2 hover:text-gray-600 transition">Close</button>
             </div>
         </div>
     </div>
@@ -151,7 +158,7 @@
         async function fetchNotice() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getNotice");
-                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지가 없습니다.';
+                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지사항이 없습니다.';
             } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
         }
 
@@ -182,13 +189,13 @@
                     const itemDateStr = normalizeDate(item.date);
                     const isToday = itemDateStr === todayStr;
                     grid.innerHTML += `
-                        <div class="schedule-card ${isToday ? 'today-card' : ''}">
+                        <div class="schedule-card ${isToday ? 'today-card shadow-lg' : ''}">
                             ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
-                            <div class="text-[10px] font-bold text-blue-600 mb-1 uppercase">${item.day}요일</div>
-                            <div class="text-sm font-bold mb-3">${formatDate(item.date)}</div>
-                            <div class="text-[11px] text-left space-y-2 border-t pt-2">
-                                <div><span class="text-gray-400 font-bold mr-1 italic italic">AM</span> ${item.am || '-'}</div>
-                                <div><span class="text-gray-400 font-bold mr-1 italic italic">PM</span> ${item.pm || '-'}</div>
+                            <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div>
+                            <div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div>
+                            <div class="text-[11px] text-left space-y-3 border-t pt-3">
+                                <div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium leading-tight">${item.am || '-'}</span></div>
+                                <div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium leading-tight">${item.pm || '-'}</span></div>
                             </div>
                         </div>
                     `;
