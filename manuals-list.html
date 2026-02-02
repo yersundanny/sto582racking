@@ -3,107 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Archive - STO 582 Racking</title>
+    <title>Manual Archive - STO 582</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
-        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #f9f9f9; letter-spacing: -0.02em; }
-        .breadcrumb { background: #fff; border-bottom: 1px solid #eee; padding: 15px 10%; font-size: 0.9rem; color: #666; display: flex; align-items: center; gap: 8px; }
-        .list-item { transition: all 0.2s ease; border-bottom: 1px solid #f1f1f1; }
-        .list-item:hover { background-color: #f8fbff; transform: translateX(5px); }
-        .contact-card { background: #eef2ff; border: 1px solid #e0e7ff; border-radius: 8px; padding: 16px; margin-top: 24px; display: flex; align-items: center; gap: 12px; }
-    </style>
 </head>
-<body>
+<body class="bg-gray-50">
 
-    <nav class="breadcrumb">
-        <a href="index.html"><i class="fas fa-home"></i></a> 
-        <span>&gt;</span> 
-        <span class="font-bold text-gray-900">랙킹 매뉴얼 아카이브 (Racking Manual Archive)</span>
-    </nav>
+    <div class="max-w-4xl mx-auto py-12 px-6">
+        <div class="flex items-center justify-between mb-8">
+            <button onclick="location.href='index.html'" class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 class="text-3xl font-bold text-gray-900 italic">Manual Archive</h1>
+            <div class="w-8"></div>
+        </div>
 
-    <main class="max-w-4xl mx-auto py-16 px-6">
-        <header class="mb-12">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Manual Archive (매뉴얼 모음)</h1>
-            <p class="text-gray-600 leading-relaxed">
-                랙킹 매뉴얼 아카이브입니다. 필요한 정보를 찾을 수 없는 경우 아래 연락처로 문의해 주세요.<br>
-                <span class="text-sm text-gray-400">This is the Racking Manual Archive. If you cannot find the information you need, please contact us below.</span>
-            </p>
-            
-            <div class="contact-card">
-                <div class="text-indigo-600 text-xl"><i class="fas fa-comment-dots"></i></div>
-                <div class="text-sm">
-                    <span class="font-bold text-indigo-900 italic">MS Teams:</span> 
-                    <code class="bg-white px-2 py-1 rounded border border-indigo-100 font-medium text-indigo-700 ml-1">yuseon.hwang</code>
-                    <span class="text-gray-500 ml-2">(Racking Specialist / 랙킹 스페셜리스트)</span>
-                </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b bg-gray-50 flex justify-between items-center">
+                <span class="text-sm font-bold text-gray-500 uppercase tracking-widest">Document List</span>
+                <span id="fileCount" class="text-xs font-bold bg-blue-100 text-blue-600 px-2 py-1 rounded-full">0 Files</span>
             </div>
-        </header>
 
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-            <div class="bg-gray-50 px-6 py-3 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                파일명 (File Name) / 카테고리 (Category)
-            </div>
-            <ul>
-                <script>
-                    const GITHUB_USERNAME = "yersundanny"; 
-                    const REPO_NAME = "sto582racking";
-                    
-                    // 이미지에서 추출한 실제 한글 파일 리스트
-                    const fileNames = [
-                        "곤돌라_백월.pdf",
-                        "디스플레이_타워.pdf",
-                        "디스플레이_테이블.pdf",
-                        "머천다이징_트롤리.pdf",
-                        "빈.pdf",
-                        "셀빙시스템.pdf",
-                        "아치테이블.pdf",
-                        "애드온_테이블.pdf",
-                        "팔렛빈.pdf",
-                        "퍼니처_랙킹.pdf",
-                        "포디움_프레임.pdf",
-                        "포디움큐브.pdf"
-                    ];
-
-                    const fileListUI = fileNames.map(name => {
-                        const displayName = name.replace('.pdf', '').replace(/_/g, ' ');
-                        const viewUrl = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/docs/${encodeURIComponent(name)}`;
-                        
-                        return `
-                            <li class="list-item">
-                                <a href="${viewUrl}" target="_blank" class="flex items-center justify-between p-6">
-                                    <div class="flex items-center gap-4">
-                                        <i class="far fa-file-pdf text-red-500 text-2xl"></i>
-                                        <div>
-                                            <span class="block font-bold text-gray-800">${displayName}</span>
-                                            <span class="text-xs text-gray-400">PDF Document (PDF 문서 - 바로 읽기)</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-gray-300 flex items-center gap-2">
-                                        <span class="text-xs uppercase font-bold">Open</span>
-                                        <i class="fas fa-eye"></i>
-                                    </div>
-                                </a>
-                            </li>
-                        `;
-                    }).join('');
-
-                    document.write(fileListUI);
-                </script>
+            <ul id="fileList" class="divide-y divide-gray-100">
+                <li class="p-12 text-center text-gray-400">
+                    <i class="fas fa-spinner animate-spin mb-3 text-2xl"></i>
+                    <p>파일 목록을 동기화 중입니다...</p>
+                </li>
             </ul>
         </div>
+    </div>
 
-        <div class="mt-10 text-center">
-            <a href="index.html" class="inline-flex items-center gap-2 text-gray-500 font-bold hover:text-black transition-colors">
-                <i class="fas fa-arrow-left"></i> 메인 아카이브로 돌아가기 (Back to Main)
-            </a>
-        </div>
-    </main>
+    <script>
+        // 유선님의 GitHub 정보
+        const USERNAME = "yuseonhwang"; // 유선님의 깃허브 ID로 확인해주세요
+        const REPO = "Racking-Archive"; // 저장소 이름
+        const FOLDER = "docs"; // PDF 파일이 들어있는 폴더명
 
-    <footer class="py-10 text-center text-gray-400 text-xs">
-        <p>© 2026 STO 582 Racking Archive. All Rights Reserved.</p>
-    </footer>
+        async function loadFiles() {
+            const listElement = document.getElementById('fileList');
+            const countElement = document.getElementById('fileCount');
 
+            try {
+                // 토큰 없이 공개된 파일 목록을 가져오는 GitHub API (공개 저장소는 제한이 거의 없음)
+                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${FOLDER}`);
+                const files = await response.json();
+
+                if (response.ok) {
+                    const pdfFiles = files.filter(file => file.name.toLowerCase().endsWith('.pdf'));
+                    countElement.innerText = `${pdfFiles.length} Files`;
+                    
+                    if (pdfFiles.length === 0) {
+                        listElement.innerHTML = '<li class="p-12 text-center text-gray-400">등록된 PDF 매뉴얼이 없습니다.</li>';
+                        return;
+                    }
+
+                    listElement.innerHTML = pdfFiles.map(file => `
+                        <li class="p-5 hover:bg-blue-50 transition cursor-pointer flex items-center justify-between" 
+                            onclick="window.open('${file.download_url}', '_blank')">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-800">${file.name.replace('.pdf', '')}</p>
+                                    <p class="text-xs text-gray-400 uppercase tracking-tighter">Click to view manual</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-external-link-alt text-gray-300"></i>
+                        </li>
+                    `).join('');
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                listElement.innerHTML = '<li class="p-12 text-center text-red-400 font-medium">목록을 불러오지 못했습니다. <br><span class="text-xs opacity-60">저장소 이름과 ID가 정확한지 확인해 주세요.</span></li>';
+            }
+        }
+
+        window.onload = loadFiles;
+    </script>
 </body>
 </html>
