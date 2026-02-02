@@ -10,16 +10,19 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; }
         
-        /* 메인 카드 스타일 */
         .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
-        /* 스케줄 카드 스타일 */
         .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; transition: 0.3s; }
         .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
         .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 99px; }
+
+        /* 비디오 선택 모달 스타일 */
+        #videoModal { backdrop-filter: blur(4px); transition: 0.3s; }
+        .modal-content { transform: scale(0.9); transition: 0.3s; }
+        #videoModal.flex .modal-content { transform: scale(1); }
     </style>
 </head>
 <body>
@@ -52,16 +55,16 @@
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
         <div class="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-            <div class="flex justify-between items-end mb-8">
+            <div class="flex justify-between items-end mb-8 text-center md:text-left">
                 <div>
-                    <h2 class="text-2xl font-black text-gray-900 italic uppercase">This Week Plan</h2>
+                    <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">This Week Plan</h2>
                     <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest">Loading...</p>
                 </div>
-                <div class="text-[10px] font-bold text-gray-300 uppercase">08:30 - 17:30 Work</div>
+                <div class="hidden md:block text-[10px] font-bold text-gray-300 uppercase">08:30 - 17:30 Work</div>
             </div>
             
-            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <p class="col-span-5 text-center py-10 text-gray-400 italic">스케줄 데이터를 불러오는 중입니다...</p>
+            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+                <p class="col-span-5 text-center py-10 text-gray-400 italic font-medium">동기화 중...</p>
             </div>
         </div>
     </section>
@@ -74,13 +77,15 @@
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
-        <div class="card-container" onclick="alert('Assembly Guide 준비 중')">
+        
+        <div class="card-container" onclick="openVideoModal()">
             <div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800">Assembly Video</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
+
         <div class="card-container" onclick="location.href='location-guide.html'">
             <div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div>
             <div class="p-8 flex justify-between items-center">
@@ -88,13 +93,15 @@
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
-        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/...','_blank')">
+
+        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')">
             <div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div>
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-external-link-alt"></i></div>
             </div>
         </div>
+
         <div class="card-container" onclick="location.href='safety-main.html'">
             <div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div>
             <div class="p-8 flex justify-between items-center">
@@ -111,6 +118,24 @@
         </div>
     </section>
 
+    <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6">
+        <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+            <div class="bg-red-600 p-6 text-center text-white">
+                <i class="fab fa-youtube text-4xl mb-2"></i>
+                <h3 class="font-black italic text-lg uppercase tracking-tight">Select Video Format</h3>
+            </div>
+            <div class="p-6 space-y-3">
+                <button onclick="window.open('제공해주셨던_가로형_주소','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
+                    <i class="fas fa-desktop text-red-600"></i> 가로형 영상 (Desktop)
+                </button>
+                <button onclick="window.open('제공해주셨셨던_세로형_주소','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
+                    <i class="fas fa-mobile-alt text-red-600"></i> 세로형 영상 (Shorts)
+                </button>
+                <button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
 
@@ -119,11 +144,15 @@
             loadSchedule();
         });
 
+        // 영상 모달 제어
+        function openVideoModal() { document.getElementById('videoModal').classList.remove('hidden'); document.getElementById('videoModal').classList.add('flex'); }
+        function closeVideoModal() { document.getElementById('videoModal').classList.add('hidden'); document.getElementById('videoModal').classList.remove('flex'); }
+
         async function fetchNotice() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getNotice");
-                document.getElementById('noticeDisplay').innerHTML = await res.text() || '등록된 공지가 없습니다.';
-            } catch (e) { document.getElementById('noticeDisplay').innerText = "Notice Sync Error"; }
+                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지가 없습니다.';
+            } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
         }
 
         async function loadSchedule() {
@@ -158,34 +187,21 @@
                             <div class="text-[10px] font-bold text-blue-600 mb-1 uppercase">${item.day}요일</div>
                             <div class="text-sm font-bold mb-3">${formatDate(item.date)}</div>
                             <div class="text-[11px] text-left space-y-2 border-t pt-2">
-                                <div><span class="text-gray-400 font-bold mr-1 italic">AM</span> ${item.am || '-'}</div>
-                                <div><span class="text-gray-400 font-bold mr-1 italic">PM</span> ${item.pm || '-'}</div>
+                                <div><span class="text-gray-400 font-bold mr-1 italic italic">AM</span> ${item.am || '-'}</div>
+                                <div><span class="text-gray-400 font-bold mr-1 italic italic">PM</span> ${item.pm || '-'}</div>
                             </div>
-                            ${item.note ? `<p class="mt-2 text-[9px] text-red-500 font-bold italic">${item.note}</p>` : ''}
                         </div>
                     `;
                 });
                 rangeText.innerText = `${monStr} - ${friStr}`;
-            } catch (e) { grid.innerHTML = "<p class='col-span-5 text-center py-10 text-red-400 font-bold'>스케줄 로드 실패</p>"; }
+            } catch (e) { grid.innerHTML = "<p class='col-span-5 text-red-400 font-bold py-10'>로드 실패</p>"; }
         }
 
-        function normalizeDate(d) {
-            if(!d) return "";
-            const date = new Date(d);
-            return isNaN(date) ? String(d).trim() : getKSTDateString(date);
-        }
-        function getKSTDateString(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-        function formatDate(dStr) {
-            const d = new Date(dStr);
-            return isNaN(d) ? dStr : `${d.getMonth()+1}월 ${d.getDate()}일`;
-        }
+        function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
+        function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+        function formatDate(dStr) { const d = new Date(dStr); return isNaN(d) ? dStr : `${d.getMonth()+1}월 ${d.getDate()}일`; }
         function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
-        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('loginForm').classList.add('hidden'); document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
+        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
         async function saveNotice() {
             const btn = document.getElementById('saveBtn'); btn.innerText = "저장 중...";
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
