@@ -7,111 +7,81 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
-        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; letter-spacing: -0.02em; }
-        .card-container { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
-        .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
-        .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; }
+        .card-container { transition: 0.3s; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
+        .card-container:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #0058a3; }
+        .icon-wrapper { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background-color: #f8fafc; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
-        .today-card { border: 2.5px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
-        .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 99px; }
+        .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
+        .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 99px; }
         .tab-active { background-color: #0058a3; color: white; border-color: #0058a3; }
     </style>
 </head>
 <body>
 
-    <header class="pt-20 pb-12 px-6 max-w-6xl mx-auto text-center">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-gray-900 tracking-tight italic text-blue-800 uppercase">STO 582 Racking Archive</h1>
-        <p class="text-gray-500 text-lg leading-relaxed max-w-2xl mx-auto">
-            이케아 코워커를 위한 랙킹 통합 가이드 센터<br>
-            <span class="text-xs font-medium text-gray-400 uppercase tracking-widest italic font-sans">Digital Hub for Racking Specialists</span>
-        </p>
+    <header class="pt-16 pb-10 px-6 max-w-6xl mx-auto text-center">
+        <h1 class="text-3xl md:text-4xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
+        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest">Digital Hub for Racking Specialists</p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-8">
-        <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5 shadow-sm">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-bullhorn text-blue-600"></i> Specialist Notice
-                </h2>
-                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded hover:bg-gray-100 transition border uppercase">Admin</button>
+        <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold text-gray-500 uppercase"><i class="fas fa-bullhorn text-blue-600 mr-1"></i> Notice</span>
+                <button onclick="toggleEditor()" class="text-[10px] text-gray-400 underline uppercase">Admin</button>
             </div>
-            <div id="noticeDisplay" class="min-h-[60px] p-4 bg-gray-50 rounded-xl text-sm leading-relaxed text-gray-600">
-                <p class="text-gray-300 italic animate-pulse">Syncing notice...</p>
-            </div>
-            <div id="editorSection" class="hidden mt-4 pt-4 border-t space-y-3">
-                <div id="loginForm" class="flex items-center gap-2">
-                    <input type="password" id="adminPw" placeholder="PW" class="w-24 px-2 py-1 text-xs border rounded outline-none">
-                    <button onclick="checkAuth()" class="bg-blue-600 text-white px-3 py-1 text-xs rounded font-bold">인증</button>
-                </div>
-                <div id="editTools" class="hidden space-y-3">
-                    <div id="richEditor" contenteditable="true" class="w-full min-h-[100px] p-4 border-2 border-blue-100 rounded-xl bg-white text-sm focus:outline-blue-500"></div>
-                    <div class="flex justify-end"><button id="saveBtn" onclick="saveNotice()" class="px-5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold">저장</button></div>
+            <div id="noticeDisplay" class="text-sm text-gray-600 min-h-[40px]">공지 로딩 중...</div>
+            <div id="editorSection" class="hidden mt-4 pt-4 border-t">
+                <input type="password" id="adminPw" placeholder="PW" class="text-xs border p-1 rounded outline-none">
+                <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-2 py-1 rounded">인증</button>
+                <div id="editTools" class="hidden mt-2">
+                    <div id="richEditor" contenteditable="true" class="border p-2 text-sm min-h-[60px] bg-white mb-2"></div>
+                    <button id="saveBtn" onclick="saveNotice()" class="bg-blue-600 text-white text-xs px-3 py-1 rounded">저장</button>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
-        <div class="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
-                <div>
-                    <h2 id="viewTitle" class="text-3xl font-black text-gray-900 italic tracking-tighter uppercase text-center md:text-left">Weekly Plan</h2>
-                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest text-center md:text-left">Syncing Schedule...</p>
-                </div>
-                <div class="flex bg-gray-100 p-1 rounded-xl">
-                    <button id="tabWeek" onclick="switchView('week')" class="px-6 py-2 text-xs font-bold rounded-lg tab-active transition-all">WEEKLY</button>
-                    <button id="tabMonth" onclick="switchView('month')" class="px-6 py-2 text-xs font-bold rounded-lg text-gray-400 transition-all">MONTHLY</button>
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h2 id="viewTitle" class="text-xl font-bold italic uppercase">Weekly Plan</h2>
+                <div class="flex bg-gray-100 p-1 rounded-lg text-[11px] font-bold">
+                    <button id="tabWeek" onclick="switchView('week')" class="px-4 py-1.5 rounded-md tab-active transition-all">WEEKLY</button>
+                    <button id="tabMonth" onclick="switchView('month')" class="px-4 py-1.5 rounded-md text-gray-400 transition-all ml-1">MONTHLY</button>
                 </div>
             </div>
-            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <p class="text-gray-400 italic p-10 col-span-5 text-center">Loading Data...</p>
+            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                <p class="text-gray-400 italic p-10 col-span-5 text-center">스케줄 로드 중...</p>
             </div>
         </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-2 md:grid-cols-3 gap-6">
         <div class="card-container" onclick="location.href='manuals-list.html'">
-            <div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Manuals</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 보음</p></div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
+            <div class="icon-wrapper text-blue-600"><i class="fas fa-file-alt"></i></div>
+            <div class="p-4 text-center"><h3 class="text-sm font-bold">Manual Archive</h3></div>
         </div>
-        <div class="card-container" onclick="location.href='#'">
-            <div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Assembly</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
+        <div class="card-container" onclick="alert('Assembly Guide 준비 중')">
+            <div class="icon-wrapper text-red-500"><i class="fas fa-video"></i></div>
+            <div class="p-4 text-center"><h3 class="text-sm font-bold">Assembly Video</h3></div>
         </div>
         <div class="card-container" onclick="location.href='location-guide.html'">
-            <div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Location</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
+            <div class="icon-wrapper text-green-600"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="p-4 text-center"><h3 class="text-sm font-bold">Location Guide</h3></div>
         </div>
         <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/...','_blank')">
-            <div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Stock</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-external-link-alt"></i></div>
-            </div>
+            <div class="icon-wrapper text-orange-500"><i class="fas fa-box"></i></div>
+            <div class="p-4 text-center"><h3 class="text-sm font-bold">Stock Check</h3></div>
         </div>
         <div class="card-container" onclick="location.href='safety-main.html'">
-            <div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Safety</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
+            <div class="icon-wrapper text-teal-600"><i class="fas fa-shield-alt"></i></div>
+            <div class="p-4 text-center"><h3 class="text-sm font-bold">Safety Center</h3></div>
         </div>
         <div class="card-container" onclick="location.href='old-vs-new.html'">
-            <div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div>
-                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
+            <div class="icon-wrapper text-gray-500"><i class="fas fa-exchange-alt"></i></div>
+            <div class="p-4 text-center"><h3 class="text-sm font-bold">Old vs New</h3></div>
         </div>
     </section>
 
@@ -120,16 +90,13 @@
         let cachedData = [];
         let currentMode = 'week';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchNotice();
-            loadAllData();
-        });
+        window.addEventListener('DOMContentLoaded', () => { fetchNotice(); loadAllData(); });
 
         async function fetchNotice() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getNotice");
-                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지사항이 없습니다.';
-            } catch (e) { document.getElementById('noticeDisplay').innerText = "Notice Load Error"; }
+                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지 없음';
+            } catch(e) {}
         }
 
         async function loadAllData() {
@@ -137,85 +104,77 @@
                 const res = await fetch(SCRIPT_URL + "?action=getSchedule");
                 cachedData = await res.json();
                 renderSchedule();
-            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "<p class='col-span-5 text-center text-red-400 font-bold'>데이터 연동 실패</p>"; }
+            } catch(e) { document.getElementById('scheduleGrid').innerHTML = "로드 실패"; }
         }
 
         function switchView(mode) {
             currentMode = mode;
-            document.getElementById('tabWeek').className = mode === 'week' ? "px-6 py-2 text-xs font-bold rounded-lg tab-active transition-all" : "px-6 py-2 text-xs font-bold rounded-lg text-gray-400 transition-all";
-            document.getElementById('tabMonth').className = mode === 'month' ? "px-6 py-2 text-xs font-bold rounded-lg tab-active transition-all" : "px-6 py-2 text-xs font-bold rounded-lg text-gray-400 transition-all";
+            document.getElementById('tabWeek').className = mode === 'week' ? "px-4 py-1.5 rounded-md tab-active" : "px-4 py-1.5 rounded-md text-gray-400";
+            document.getElementById('tabMonth').className = mode === 'month' ? "px-4 py-1.5 rounded-md tab-active" : "px-4 py-1.5 rounded-md text-gray-400";
             document.getElementById('viewTitle').innerText = mode === 'week' ? "Weekly Plan" : "Monthly Plan";
             renderSchedule();
         }
 
         function renderSchedule() {
             const grid = document.getElementById('scheduleGrid');
-            const rangeText = document.getElementById('currentRangeText');
             const now = new Date();
             grid.innerHTML = "";
 
+            const todayStr = getKSTDateString(now);
+            let filtered = [];
+
             if (currentMode === 'week') {
                 const day = now.getDay();
-                const diffToMon = day === 0 ? -6 : 1 - day;
-                const monday = new Date(new Date().setDate(now.getDate() + diffToMon));
-                monday.setHours(0,0,0,0);
-                const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
+                const diff = day === 0 ? -6 : 1 - day;
+                const mon = new Date(new Date().setDate(now.getDate() + diff));
+                const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+                
+                const monStr = getKSTDateString(mon);
+                const friStr = getKSTDateString(fri);
 
-                const data = cachedData.filter(d => {
-                    const dDate = new Date(d.date);
-                    return dDate >= monday && dDate <= friday;
-                });
-                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
-                rangeText.innerText = `${formatDate(monday)} - ${formatDate(friday)}`;
-                buildCards(data, grid);
+                filtered = cachedData.filter(d => d.date >= monStr && d.date <= friStr);
+                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-3";
             } else {
-                const first = new Date(now.getFullYear(), now.getMonth(), 1);
-                const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                const data = cachedData.filter(d => {
-                    const dDate = new Date(d.date);
-                    return dDate >= first && dDate <= last && dDate.getDay() !== 0 && dDate.getDay() !== 6;
-                });
-                grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4";
-                rangeText.innerText = `${now.getMonth() + 1}월 전체 일정 (평일)`;
-                buildCards(data, grid);
+                const monthPrefix = todayStr.substring(0, 7); // "2026-02"
+                filtered = cachedData.filter(d => d.date.startsWith(monthPrefix) && !["토", "일"].includes(d.day));
+                grid.className = "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3";
             }
-        }
 
-        function buildCards(data, container) {
-            if(data.length === 0) {
-                container.innerHTML = "<p class='col-span-full text-center py-10 text-gray-400 italic'>표시할 스케줄이 없습니다.</p>";
+            if(filtered.length === 0) {
+                grid.innerHTML = "<p class='col-span-full text-center py-10 text-gray-400 italic'>일정이 없습니다.</p>";
                 return;
             }
-            data.forEach(item => {
-                const itemDate = new Date(item.date);
-                const isToday = itemDate.toDateString() === new Date().toDateString();
-                container.innerHTML += `
-                    <div class="card-container p-5 ${isToday ? 'today-card' : ''}">
-                        ${isToday ? '<span class="today-badge uppercase">Today</span>' : ''}
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${item.day || '-'}</span>
-                            <span class="text-xs font-bold text-gray-900 font-mono">${formatDate(item.date)}</span>
+
+            filtered.forEach(item => {
+                const isToday = item.date === todayStr;
+                grid.innerHTML += `
+                    <div class="card-container p-4 ${isToday ? 'today-card' : ''}">
+                        ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
+                        <div class="text-[10px] font-bold text-blue-600 mb-1 uppercase">${item.day}요일</div>
+                        <div class="text-xs font-bold mb-3">${item.date.split('-')[1]}월 ${item.date.split('-')[2]}일</div>
+                        <div class="text-[11px] text-left space-y-2 border-t pt-2">
+                            <div><span class="text-gray-400 font-bold mr-1 italic">AM</span> ${item.am || '-'}</div>
+                            <div><span class="text-gray-400 font-bold mr-1 italic">PM</span> ${item.pm || '-'}</div>
                         </div>
-                        <div class="space-y-4">
-                            <div class="bg-gray-50/50 p-2 rounded-lg">
-                                <span class="text-[9px] font-bold text-gray-400 uppercase block mb-1">AM Schedule</span>
-                                <p class="text-sm font-semibold text-gray-700 leading-tight">${item.am || '-'}</p>
-                            </div>
-                            <div class="bg-gray-50/50 p-2 rounded-lg border-t border-gray-100">
-                                <span class="text-[9px] font-bold text-gray-400 uppercase block mb-1">PM Schedule</span>
-                                <p class="text-sm font-semibold text-gray-700 leading-tight">${item.pm || '-'}</p>
-                            </div>
-                        </div>
-                        ${item.note ? `<p class="mt-3 text-[10px] text-red-500 font-bold italic border-t pt-2">${item.note}</p>` : ''}
+                        ${item.note ? `<p class="mt-2 text-[9px] text-red-500 font-bold italic">${item.note}</p>` : ''}
                     </div>
                 `;
             });
         }
 
-        function formatDate(dStr) { const d = new Date(dStr); return `${d.getMonth() + 1}월 ${d.getDate()}일`; }
+        function getKSTDateString(date) {
+            const offset = 9 * 60 * 60 * 1000;
+            const kstDate = new Date(date.getTime() + offset);
+            return kstDate.toISOString().split('T')[0];
+        }
+
         function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
-        function checkAuth() { if (document.getElementById('adminPw').value === "sto582") { document.getElementById('loginForm').classList.add('hidden'); document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } else { alert("비밀번호 불일치"); } }
-        async function saveNotice() { const btn = document.getElementById('saveBtn'); btn.innerText = "Syncing..."; await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) }); fetchNotice(); toggleEditor(); btn.innerText = "저장"; }
+        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('loginForm').classList.add('hidden'); document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
+        async function saveNotice() {
+            const btn = document.getElementById('saveBtn'); btn.innerText = "Syncing...";
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
+            location.reload();
+        }
     </script>
 </body>
 </html>
