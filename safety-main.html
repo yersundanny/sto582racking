@@ -8,157 +8,171 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
-        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fff; scroll-behavior: smooth; }
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fff; scroll-behavior: smooth; color: #333; }
         
-        /* 앵커 메뉴 스타일 */
+        /* 📍 우측 앵커 메뉴 (Quick Nav) */
         .anchor-menu {
             position: fixed;
-            right: 40px;
+            right: 30px;
             top: 50%;
             transform: translateY(-50%);
             z-index: 100;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px 10px;
-            border-radius: 50px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        .anchor-item {
-            width: 12px; height: 12px;
-            background: #ddd;
+        .anchor-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            group: hover;
+        }
+        .anchor-dot {
+            width: 10px; height: 10px;
+            background: #e2e8f0;
             border-radius: 50%;
-            margin: 15px 0;
-            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .anchor-link:hover .anchor-dot, .anchor-link.active .anchor-dot {
+            background: #0058a3;
+            transform: scale(1.5);
+            border-color: #ffdb00;
+        }
+        .anchor-text {
+            margin-right: 15px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            opacity: 0;
             transition: 0.3s;
-            display: block;
+            text-transform: uppercase;
         }
-        .anchor-item:hover, .anchor-item.active { background: #0058a3; transform: scale(1.3); }
-        .anchor-tooltip {
-            position: absolute; right: 30px; 
-            background: #333; color: #fff; padding: 4px 10px;
-            border-radius: 4px; font-size: 11px; white-space: nowrap;
-            opacity: 0; pointer-events: none; transition: 0.2s;
+        .anchor-link:hover .anchor-text, .anchor-link.active .anchor-text {
+            opacity: 1;
+            color: #0058a3;
         }
-        .anchor-link:hover .anchor-tooltip { opacity: 1; }
 
-        .compare-section { border-bottom: 1px solid #f0f0f0; padding: 80px 0; }
-        .vs-line { position: relative; }
-        .vs-line::after {
-            content: ""; position: absolute; left: 50%; top: 0; bottom: 0;
-            width: 1px; background: #eee; transform: translateX(-50%);
-        }
+        /* 아티클 섹션 스타일 */
+        .article-section { padding: 100px 0; border-bottom: 1px solid #f1f5f9; }
+        .image-box { border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
         
         @media (max-width: 768px) {
-            .vs-line::after { display: none; }
             .anchor-menu { display: none; }
+            .article-section { padding: 60px 0; }
         }
     </style>
 </head>
 <body>
 
     <nav class="anchor-menu">
-        <a href="#section1" class="anchor-link flex items-center justify-center relative">
-            <span class="anchor-tooltip">안전 핀 (Safety Pins)</span>
-            <div class="anchor-item"></div>
+        <a href="#intro" class="anchor-link active">
+            <span class="anchor-text">Intro</span>
+            <div class="anchor-dot"></div>
         </a>
-        <a href="#section2" class="anchor-link flex items-center justify-center relative">
-            <span class="anchor-tooltip">바닥 고정 (Floor Fixing)</span>
-            <div class="anchor-item"></div>
+        <a href="#pins" class="anchor-link">
+            <span class="anchor-text">Safety Pins</span>
+            <div class="anchor-dot"></div>
         </a>
-        <a href="#section3" class="anchor-link flex items-center justify-center relative">
-            <span class="anchor-tooltip">적재 하중 (Load Capacity)</span>
-            <div class="anchor-item"></div>
+        <a href="#anchoring" class="anchor-link">
+            <span class="anchor-text">Anchoring</span>
+            <div class="anchor-dot"></div>
+        </a>
+        <a href="#labels" class="anchor-link">
+            <span class="anchor-text">Load Labels</span>
+            <div class="anchor-dot"></div>
         </a>
     </nav>
 
-    <nav class="px-[10%] py-6 flex items-center gap-4 text-sm text-gray-400 border-b">
-        <a href="index.html" class="hover:text-black"><i class="fas fa-home"></i></a>
-        <span>&gt;</span>
-        <span class="font-bold text-gray-900">Safety Center (안전 교육 센터)</span>
+    <nav class="sticky top-0 bg-white/80 backdrop-blur-md z-50 border-b">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4 text-sm">
+            <a href="index.html" class="text-gray-400 hover:text-blue-600 transition"><i class="fas fa-home"></i></a>
+            <span class="text-gray-300">/</span>
+            <span class="font-bold text-gray-900 uppercase tracking-tighter">Safety Education</span>
+        </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-6 py-16">
-        <header class="mb-20">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4 tracking-tighter">Safety Education Center</h1>
-            <p class="text-gray-500">랙킹 전문가로서 반드시 지켜야 할 구형과 신형 안전 기준 비교 자료입니다.</p>
-            <div class="h-1.5 w-20 bg-[#0058a3] mt-6"></div>
+    <main id="intro" class="max-w-4xl mx-auto px-6">
+        <header class="py-24 border-b-4 border-black">
+            <h1 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-none italic">SAFETY<br>FIRST.</h1>
+            <p class="text-xl text-gray-500 leading-relaxed font-light">
+                STO 582 랙킹 스페셜리스트를 위한 통합 안전 지침서입니다.<br>
+                우리의 안전은 규격화된 표준에서 시작됩니다.
+            </p>
         </header>
 
-        <section id="section1" class="compare-section">
-            <h2 class="text-2xl font-bold mb-12 text-center text-gray-800">01. 안전 핀 체결 (Safety Pin Standards)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 vs-line">
-                <div class="space-y-4">
-                    <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center overflow-hidden">
-                        <i class="fas fa-times-circle text-gray-300 text-5xl"></i>
-                        </div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest italic">Old Standard</p>
-                    <h3 class="text-lg font-bold text-gray-500">범용 플라스틱 핀</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">탈락 위험이 높고 내구성이 약해 현재는 사용하지 않는 기준입니다.</p>
+        <section id="pins" class="article-section">
+            <div class="image-box mb-10 bg-gray-100 aspect-video relative">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                    <i class="fas fa-camera text-4xl"></i>
                 </div>
-                <div class="space-y-4">
-                    <div class="bg-blue-50 rounded-xl h-64 flex items-center justify-center overflow-hidden border-2 border-[#0058a3]">
-                        <i class="fas fa-check-circle text-blue-200 text-5xl"></i>
-                        </div>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">New Standard</p>
-                    <h3 class="text-lg font-bold text-gray-900">잠금형 금속 안전 핀</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">충격에도 절대 빠지지 않는 잠금 장치가 포함된 최신 안전 기준입니다.</p>
+            </div>
+            <div class="max-w-2xl">
+                <span class="text-blue-600 font-bold text-xs uppercase tracking-widest block mb-4">Standard 01</span>
+                <h2 class="text-3xl font-bold mb-6">잠금형 안전 핀 체결 규정</h2>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    모든 빔(Beam)과 업라이트(Upright)의 체결 부위에는 반드시 **규격화된 잠금형 안전 핀**이 장착되어야 합니다. 이전의 플라스틱 핀이나 임의의 볼트 사용은 금지됩니다.
+                </p>
+                <div class="bg-blue-50 p-6 rounded-2xl border-l-4 border-blue-600">
+                    <p class="text-sm text-blue-800 font-medium italic">"충격으로 인해 빔이 이탈하는 것을 방지하는 최종 수단입니다."</p>
                 </div>
             </div>
         </section>
 
-        <section id="section2" class="compare-section">
-            <h2 class="text-2xl font-bold mb-12 text-center text-gray-800">02. 바닥 앵커 고정 (Floor Anchoring)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 vs-line">
-                <div class="text-right pr-4">
-                    <h3 class="font-bold text-gray-400">외줄 고정 방식</h3>
-                    <p class="text-sm text-gray-400 mt-2">이전에는 한 쪽 방향만 고정하여 전도 위험이 있었습니다.</p>
+        <section id="anchoring" class="article-section">
+            <div class="image-box mb-10 bg-gray-100 aspect-video relative">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                    <i class="fas fa-camera text-4xl"></i>
                 </div>
-                <div class="pl-4">
-                    <h3 class="font-bold text-blue-700">교차 4점 고정 방식</h3>
-                    <p class="text-sm text-gray-600 mt-2">지진 및 외부 충격에 대비하여 4개의 포인트를 모두 고정합니다.</p>
-                </div>
+            </div>
+            <div class="max-w-2xl">
+                <span class="text-blue-600 font-bold text-xs uppercase tracking-widest block mb-4">Standard 02</span>
+                <h2 class="text-3xl font-bold mb-6">바닥 앵커 볼트 고정 기준</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    단독으로 세워지는 모든 랙킹 유닛은 바닥면에 최소 **4점 이상의 앵커 고정**이 필수입니다. 이는 지진 발생 시 전도를 방지하며, 포크리프트 충돌 시 구조적 안정성을 보장합니다.
+                </p>
             </div>
         </section>
 
-        <section id="section3" class="compare-section border-none">
-            <h2 class="text-2xl font-bold mb-12 text-center text-gray-800">03. 적재 하중 표시 (Load Labeling)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 vs-line">
-                <div class="opacity-40">
-                    <div class="bg-gray-200 h-40 rounded-lg mb-4"></div>
-                    <h3 class="font-bold">임의 수기 작성</h3>
+        <section id="labels" class="article-section border-none">
+            <div class="image-box mb-10 bg-gray-100 aspect-video relative">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                    <i class="fas fa-camera text-4xl"></i>
                 </div>
-                <div>
-                    <div class="bg-orange-100 h-40 rounded-lg mb-4 border-2 border-orange-400 flex items-center justify-center">
-                        <span class="text-orange-600 font-bold font-mono">MAX 1000KG</span>
-                    </div>
-                    <h3 class="font-bold">규격화된 하중 라벨 부착</h3>
-                </div>
+            </div>
+            <div class="max-w-2xl">
+                <span class="text-blue-600 font-bold text-xs uppercase tracking-widest block mb-4">Standard 03</span>
+                <h2 class="text-3xl font-bold mb-6">하중 경고 라벨 (Load Labels)</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    모든 랙에는 빔 레벨당 최대 허용 하중이 명시된 공식 라벨이 부착되어야 합니다. 라벨이 훼손되거나 수치가 불분명한 경우 즉시 스페셜리스트에게 보고하여 재발급 받아야 합니다.
+                </p>
             </div>
         </section>
     </main>
 
-    <footer class="py-20 text-center text-gray-300 text-xs">
-        © 2026 STO 582 Safety Education.
+    <footer class="py-24 bg-gray-900 text-center">
+        <p class="text-gray-500 text-xs mb-4 uppercase tracking-widest font-bold">Safe Racking, Safe People.</p>
+        <p class="text-gray-700 text-[10px]">© 2026 STO 582 Racking Specialist Archive.</p>
     </footer>
 
     <script>
-        // 스크롤 시 앵커 활성화 기능
+        // 스크롤 시 앵커 활성화
         window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('section');
-            const navItems = document.querySelectorAll('.anchor-item');
+            const sections = document.querySelectorAll('section, header');
+            const navLinks = document.querySelectorAll('.anchor-link');
             
-            let current = '';
+            let current = "";
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) {
+                if (pageYOffset >= sectionTop - 200) {
                     current = section.getAttribute('id');
                 }
             });
 
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.parentElement.getAttribute('href') === `#${current}`) {
-                    item.classList.add('active');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
                 }
             });
         });
