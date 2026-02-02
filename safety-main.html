@@ -3,35 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Training Hub - IKEA Racking</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <title>Safety Center - STO 582 Racking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background: #f4f4f4; margin: 0; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
-        .hub-container { max-width: 800px; width: 100%; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #111; border-bottom: 3px solid #0058a3; padding-bottom: 10px; }
-        .pdf-section { background: #f9f9f9; padding: 20px; border-radius: 4px; margin: 20px 0; border-left: 5px solid #0058a3; }
-        .pdf-link { color: #0058a3; font-weight: bold; text-decoration: none; font-size: 1.1rem; }
-        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
-        .nav-btn { display: block; padding: 25px; background: #fff; border: 2px solid #0058a3; color: #0058a3; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.2s; }
-        .nav-btn:hover { background: #0058a3; color: #fff; }
-        @media (max-width: 600px) { .grid-menu { grid-template-columns: 1fr; } }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fff; scroll-behavior: smooth; }
+        
+        /* 앵커 메뉴 스타일 */
+        .anchor-menu {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px 10px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+        }
+        .anchor-item {
+            width: 12px; height: 12px;
+            background: #ddd;
+            border-radius: 50%;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block;
+        }
+        .anchor-item:hover, .anchor-item.active { background: #0058a3; transform: scale(1.3); }
+        .anchor-tooltip {
+            position: absolute; right: 30px; 
+            background: #333; color: #fff; padding: 4px 10px;
+            border-radius: 4px; font-size: 11px; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: 0.2s;
+        }
+        .anchor-link:hover .anchor-tooltip { opacity: 1; }
+
+        .compare-section { border-bottom: 1px solid #f0f0f0; padding: 80px 0; }
+        .vs-line { position: relative; }
+        .vs-line::after {
+            content: ""; position: absolute; left: 50%; top: 0; bottom: 0;
+            width: 1px; background: #eee; transform: translateX(-50%);
+        }
+        
+        @media (max-width: 768px) {
+            .vs-line::after { display: none; }
+            .anchor-menu { display: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="hub-container">
-        <h1>안전교육 센터</h1>
-        <p>모든 코워커는 작업 전 아래 매뉴얼을 숙지해야 합니다.</p>
-        
-        <div class="pdf-section">
-            <p>전체 통합 안전 매뉴얼 (PDF)</p>
-            <a href="Racking Storage Safety Manual.pdf" class="pdf-link" target="_blank">📄 통합 안전교육 매뉴얼 다운로드 (새 탭)</a>
-        </div>
 
-        <h3>구조별 상세 안전 수칙</h3>
-        <div class="grid-menu">
-            <a href="safety-display-stand.html" class="nav-btn">디스플레이 스탠드<br>Display Stand Safety</a>
-            <a href="safety-backwall.html" class="nav-btn">백월 랙킹<br>Backwall Racking Safety</a>
-        </div>
-    </div>
+    <nav class="anchor-menu">
+        <a href="#section1" class="anchor-link flex items-center justify-center relative">
+            <span class="anchor-tooltip">안전 핀 (Safety Pins)</span>
+            <div class="anchor-item"></div>
+        </a>
+        <a href="#section2" class="anchor-link flex items-center justify-center relative">
+            <span class="anchor-tooltip">바닥 고정 (Floor Fixing)</span>
+            <div class="anchor-item"></div>
+        </a>
+        <a href="#section3" class="anchor-link flex items-center justify-center relative">
+            <span class="anchor-tooltip">적재 하중 (Load Capacity)</span>
+            <div class="anchor-item"></div>
+        </a>
+    </nav>
+
+    <nav class="px-[10%] py-6 flex items-center gap-4 text-sm text-gray-400 border-b">
+        <a href="index.html" class="hover:text-black"><i class="fas fa-home"></i></a>
+        <span>&gt;</span>
+        <span class="font-bold text-gray-900">Safety Center (안전 교육 센터)</span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        <header class="mb-20">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4 tracking-tighter">Safety Education Center</h1>
+            <p class="text-gray-500">랙킹 전문가로서 반드시 지켜야 할 구형과 신형 안전 기준 비교 자료입니다.</p>
+            <div class="h-1.5 w-20 bg-[#0058a3] mt-6"></div>
+        </header>
+
+        <section id="section1" class="compare-section">
+            <h2 class="text-2xl font-bold mb-12 text-center text-gray-800">01. 안전 핀 체결 (Safety Pin Standards)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 vs-line">
+                <div class="space-y-4">
+                    <div class="bg-gray-100 rounded-xl h-64 flex items-center justify-center overflow-hidden">
+                        <i class="fas fa-times-circle text-gray-300 text-5xl"></i>
+                        </div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest italic">Old Standard</p>
+                    <h3 class="text-lg font-bold text-gray-500">범용 플라스틱 핀</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">탈락 위험이 높고 내구성이 약해 현재는 사용하지 않는 기준입니다.</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 rounded-xl h-64 flex items-center justify-center overflow-hidden border-2 border-[#0058a3]">
+                        <i class="fas fa-check-circle text-blue-200 text-5xl"></i>
+                        </div>
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">New Standard</p>
+                    <h3 class="text-lg font-bold text-gray-900">잠금형 금속 안전 핀</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">충격에도 절대 빠지지 않는 잠금 장치가 포함된 최신 안전 기준입니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section2" class="compare-section">
+            <h2 class="text-2xl font-bold mb-12 text-center text-gray-800">02. 바닥 앵커 고정 (Floor Anchoring)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 vs-line">
+                <div class="text-right pr-4">
+                    <h3 class="font-bold text-gray-400">외줄 고정 방식</h3>
+                    <p class="text-sm text-gray-400 mt-2">이전에는 한 쪽 방향만 고정하여 전도 위험이 있었습니다.</p>
+                </div>
+                <div class="pl-4">
+                    <h3 class="font-bold text-blue-700">교차 4점 고정 방식</h3>
+                    <p class="text-sm text-gray-600 mt-2">지진 및 외부 충격에 대비하여 4개의 포인트를 모두 고정합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section3" class="compare-section border-none">
+            <h2 class="text-2xl font-bold mb-12 text-center text-gray-800">03. 적재 하중 표시 (Load Labeling)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 vs-line">
+                <div class="opacity-40">
+                    <div class="bg-gray-200 h-40 rounded-lg mb-4"></div>
+                    <h3 class="font-bold">임의 수기 작성</h3>
+                </div>
+                <div>
+                    <div class="bg-orange-100 h-40 rounded-lg mb-4 border-2 border-orange-400 flex items-center justify-center">
+                        <span class="text-orange-600 font-bold font-mono">MAX 1000KG</span>
+                    </div>
+                    <h3 class="font-bold">규격화된 하중 라벨 부착</h3>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-20 text-center text-gray-300 text-xs">
+        © 2026 STO 582 Safety Education.
+    </footer>
+
+    <script>
+        // 스크롤 시 앵커 활성화 기능
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.anchor-item');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.parentElement.getAttribute('href') === `#${current}`) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
