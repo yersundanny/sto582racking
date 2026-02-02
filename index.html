@@ -9,16 +9,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; letter-spacing: -0.02em; }
-        
-        /* 카드 공통 스타일 */
-        .card-container { transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; cursor: pointer; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+        .card-container { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
-        
-        /* 오늘 날짜 강조 스타일 */
-        .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
-        .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 99px; }
+        .today-card { border: 2.5px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
+        .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 99px; }
         .tab-active { background-color: #0058a3; color: white; border-color: #0058a3; }
     </style>
 </head>
@@ -28,7 +24,7 @@
         <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-gray-900 tracking-tight italic text-blue-800 uppercase">STO 582 Racking Archive</h1>
         <p class="text-gray-500 text-lg leading-relaxed max-w-2xl mx-auto">
             이케아 코워커를 위한 랙킹 통합 가이드 센터<br>
-            <span class="text-xs font-medium text-gray-400 uppercase tracking-widest italic">Digital Hub for Racking Specialists</span>
+            <span class="text-xs font-medium text-gray-400 uppercase tracking-widest italic font-sans">Digital Hub for Racking Specialists</span>
         </p>
     </header>
 
@@ -38,21 +34,19 @@
                 <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
                     <i class="fas fa-bullhorn text-blue-600"></i> Specialist Notice
                 </h2>
-                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded hover:bg-gray-100 transition border">EDIT</button>
+                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded hover:bg-gray-100 transition border uppercase">Admin</button>
             </div>
             <div id="noticeDisplay" class="min-h-[60px] p-4 bg-gray-50 rounded-xl text-sm leading-relaxed text-gray-600">
-                <p class="text-gray-300 italic animate-pulse">공지사항 동기화 중...</p>
+                <p class="text-gray-300 italic animate-pulse">Syncing notice...</p>
             </div>
             <div id="editorSection" class="hidden mt-4 pt-4 border-t space-y-3">
                 <div id="loginForm" class="flex items-center gap-2">
-                    <input type="password" id="adminPw" placeholder="Access PW" class="w-32 px-2 py-1 text-xs border rounded outline-none">
+                    <input type="password" id="adminPw" placeholder="PW" class="w-24 px-2 py-1 text-xs border rounded outline-none">
                     <button onclick="checkAuth()" class="bg-blue-600 text-white px-3 py-1 text-xs rounded font-bold">인증</button>
                 </div>
                 <div id="editTools" class="hidden space-y-3">
-                    <div id="richEditor" contenteditable="true" class="w-full min-h-[100px] p-4 border-2 border-blue-100 rounded-xl bg-white text-sm"></div>
-                    <div class="flex justify-end gap-2">
-                        <button onclick="saveNotice()" id="saveBtn" class="px-5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold">저장 및 동기화</button>
-                    </div>
+                    <div id="richEditor" contenteditable="true" class="w-full min-h-[100px] p-4 border-2 border-blue-100 rounded-xl bg-white text-sm focus:outline-blue-500"></div>
+                    <div class="flex justify-end"><button id="saveBtn" onclick="saveNotice()" class="px-5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold">저장</button></div>
                 </div>
             </div>
         </div>
@@ -62,8 +56,8 @@
         <div class="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
                 <div>
-                    <h2 id="viewTitle" class="text-3xl font-black text-gray-900 italic tracking-tighter uppercase">Weekly Plan</h2>
-                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest italic">LOADING SCHEDULE...</p>
+                    <h2 id="viewTitle" class="text-3xl font-black text-gray-900 italic tracking-tighter uppercase text-center md:text-left">Weekly Plan</h2>
+                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest text-center md:text-left">Syncing Schedule...</p>
                 </div>
                 <div class="flex bg-gray-100 p-1 rounded-xl">
                     <button id="tabWeek" onclick="switchView('week')" class="px-6 py-2 text-xs font-bold rounded-lg tab-active transition-all">WEEKLY</button>
@@ -71,7 +65,7 @@
                 </div>
             </div>
             <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <p class="text-gray-400 italic p-10 col-span-5 text-center">데이터를 불러오는 중입니다...</p>
+                <p class="text-gray-400 italic p-10 col-span-5 text-center">Loading Data...</p>
             </div>
         </div>
     </section>
@@ -80,43 +74,43 @@
         <div class="card-container" onclick="location.href='manuals-list.html'">
             <div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
+                <div><h3 class="text-xl font-bold text-gray-800">Manuals</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 보음</p></div>
+                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
-        <div class="card-container" onclick="alert('영상 버전을 선택하세요 (PC/모바일)')">
+        <div class="card-container" onclick="location.href='#'">
             <div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Assembly Video</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
+                <div><h3 class="text-xl font-bold text-gray-800">Assembly</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
+                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
         <div class="card-container" onclick="location.href='location-guide.html'">
             <div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
+                <div><h3 class="text-xl font-bold text-gray-800">Location</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div>
+                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
-        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/...', '_blank')">
+        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/...','_blank')">
             <div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-external-link-alt"></i></div>
+                <div><h3 class="text-xl font-bold text-gray-800">Stock</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div>
+                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-external-link-alt"></i></div>
             </div>
         </div>
         <div class="card-container" onclick="location.href='safety-main.html'">
             <div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
+                <div><h3 class="text-xl font-bold text-gray-800">Safety</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div>
+                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
         <div class="card-container" onclick="location.href='old-vs-new.html'">
             <div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
+                <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
     </section>
@@ -134,8 +128,8 @@
         async function fetchNotice() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getNotice");
-                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지 없음';
-            } catch (e) { document.getElementById('noticeDisplay').innerText = "Notice Sync Error"; }
+                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지사항이 없습니다.';
+            } catch (e) { document.getElementById('noticeDisplay').innerText = "Notice Load Error"; }
         }
 
         async function loadAllData() {
@@ -143,7 +137,7 @@
                 const res = await fetch(SCRIPT_URL + "?action=getSchedule");
                 cachedData = await res.json();
                 renderSchedule();
-            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "로드 실패"; }
+            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "<p class='col-span-5 text-center text-red-400 font-bold'>데이터 연동 실패</p>"; }
         }
 
         function switchView(mode) {
@@ -181,26 +175,38 @@
                     const dDate = new Date(d.date);
                     return dDate >= first && dDate <= last && dDate.getDay() !== 0 && dDate.getDay() !== 6;
                 });
-                grid.className = "grid grid-cols-1 md:grid-cols-4 gap-4";
-                rangeText.innerText = `${now.getMonth() + 1}월 전체 일정`;
+                grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4";
+                rangeText.innerText = `${now.getMonth() + 1}월 전체 일정 (평일)`;
                 buildCards(data, grid);
             }
         }
 
         function buildCards(data, container) {
+            if(data.length === 0) {
+                container.innerHTML = "<p class='col-span-full text-center py-10 text-gray-400 italic'>표시할 스케줄이 없습니다.</p>";
+                return;
+            }
             data.forEach(item => {
-                const isToday = new Date(item.date).toDateString() === new Date().toDateString();
+                const itemDate = new Date(item.date);
+                const isToday = itemDate.toDateString() === new Date().toDateString();
                 container.innerHTML += `
                     <div class="card-container p-5 ${isToday ? 'today-card' : ''}">
-                        ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
+                        ${isToday ? '<span class="today-badge uppercase">Today</span>' : ''}
                         <div class="flex justify-between items-center mb-4">
-                            <span class="text-[10px] font-black text-blue-600 uppercase">${item.day}</span>
-                            <span class="text-xs font-bold text-gray-900">${formatDate(item.date)}</span>
+                            <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${item.day || '-'}</span>
+                            <span class="text-xs font-bold text-gray-900 font-mono">${formatDate(item.date)}</span>
                         </div>
                         <div class="space-y-4">
-                            <div><span class="text-[10px] font-bold text-gray-400 uppercase">AM</span><p class="text-sm font-medium text-gray-700">${item.am || '-'}</p></div>
-                            <div class="pt-3 border-t"><span class="text-[10px] font-bold text-gray-400 uppercase">PM</span><p class="text-sm font-medium text-gray-700">${item.pm || '-'}</p></div>
+                            <div class="bg-gray-50/50 p-2 rounded-lg">
+                                <span class="text-[9px] font-bold text-gray-400 uppercase block mb-1">AM Schedule</span>
+                                <p class="text-sm font-semibold text-gray-700 leading-tight">${item.am || '-'}</p>
+                            </div>
+                            <div class="bg-gray-50/50 p-2 rounded-lg border-t border-gray-100">
+                                <span class="text-[9px] font-bold text-gray-400 uppercase block mb-1">PM Schedule</span>
+                                <p class="text-sm font-semibold text-gray-700 leading-tight">${item.pm || '-'}</p>
+                            </div>
                         </div>
+                        ${item.note ? `<p class="mt-3 text-[10px] text-red-500 font-bold italic border-t pt-2">${item.note}</p>` : ''}
                     </div>
                 `;
             });
@@ -208,8 +214,8 @@
 
         function formatDate(dStr) { const d = new Date(dStr); return `${d.getMonth() + 1}월 ${d.getDate()}일`; }
         function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
-        function checkAuth() { if (document.getElementById('adminPw').value === "sto582") { document.getElementById('loginForm').classList.add('hidden'); document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } else { alert("비번 오류"); } }
-        async function saveNotice() { const btn = document.getElementById('saveBtn'); btn.innerText = "Syncing..."; await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) }); fetchNotice(); toggleEditor(); btn.innerText = "저장 및 동기화"; }
+        function checkAuth() { if (document.getElementById('adminPw').value === "sto582") { document.getElementById('loginForm').classList.add('hidden'); document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } else { alert("비밀번호 불일치"); } }
+        async function saveNotice() { const btn = document.getElementById('saveBtn'); btn.innerText = "Syncing..."; await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) }); fetchNotice(); toggleEditor(); btn.innerText = "저장"; }
     </script>
 </body>
 </html>
