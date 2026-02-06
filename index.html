@@ -10,17 +10,32 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; }
         
-        /* 카드 컨테이너 디자인 복구 */
+        /* 카드 컨테이너 디자인 */
         .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
-        /* 스케줄 강조 스타일 */
-        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; transition: 0.3s; }
+        /* 스케줄 카드 스타일 */
+        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; transition: 0.3s; min-height: 140px; }
         .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
         .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 99px; }
 
+        /* Monthly 전용: 페이지 전환 효과 스타일 */
+        .monthly-mode {
+            max-height: 700px;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            padding-right: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #0058a3 #f1f1f1;
+        }
+        .month-section {
+            scroll-snap-align: start;
+            scroll-margin-top: 10px;
+            padding-bottom: 40px;
+        }
+        
         /* 비디오 선택 모달 */
         #videoModal { backdrop-filter: blur(4px); transition: 0.3s; }
         .modal-content { transform: scale(0.9); transition: 0.3s; }
@@ -60,16 +75,21 @@
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
         <div class="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-            <div class="flex justify-between items-end mb-8 text-center md:text-left">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                 <div>
-                    <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">This Week Plan</h2>
+                    <h2 id="viewTitle" class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Weekly Plan</h2>
                     <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest italic">Syncing...</p>
                 </div>
-                <div class="hidden md:block text-[10px] font-bold text-gray-300 uppercase tracking-widest">08:30 - 17:30 Work</div>
+                <div class="flex bg-gray-100 p-1 rounded-xl w-full md:w-auto">
+                    <button onclick="switchView('weekly')" id="btnWeekly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm">WEEKLY</button>
+                    <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700">MONTHLY</button>
+                </div>
             </div>
             
-            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
-                <p class="col-span-5 text-center py-10 text-gray-400 italic font-medium">데이터를 불러오는 중입니다...</p>
+            <div id="scheduleWrapper" class="relative transition-all duration-300">
+                <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+                    <p class="col-span-5 text-center py-10 text-gray-400 italic font-medium">데이터를 불러오는 중입니다...</p>
+                </div>
             </div>
         </div>
     </section>
@@ -145,13 +165,14 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
+        let allScheduleData = [];
+        let currentView = 'weekly';
 
         window.addEventListener('DOMContentLoaded', () => {
             fetchNotice();
             loadSchedule();
         });
 
-        // 영상 모달 제어
         function openVideoModal() { document.getElementById('videoModal').classList.remove('hidden'); document.getElementById('videoModal').classList.add('flex'); }
         function closeVideoModal() { document.getElementById('videoModal').classList.add('hidden'); document.getElementById('videoModal').classList.remove('flex'); }
 
@@ -162,61 +183,111 @@
             } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
         }
 
-async function loadSchedule() {
-    const grid = document.getElementById('scheduleGrid');
-    const rangeText = document.getElementById('currentRangeText');
-    
-    try {
-        const res = await fetch(SCRIPT_URL + "?action=getSchedule");
-        let allData = await res.json();
-        
-        // 1. 날짜 순으로 정렬
-        allData.sort((a, b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date)));
-
-        grid.innerHTML = "";
-        let currentMonth = "";
-
-        // 2. 전체 데이터 순회하며 렌더링
-        allData.forEach(item => {
-            const itemDateStr = normalizeDate(item.date);
-            const itemDate = new Date(itemDateStr);
-            const itemMonth = (itemDate.getMonth() + 1) + "월"; // 현재 아이템의 월
-            const isToday = itemDateStr === getKSTDateString(new Date());
-
-            // 3. 월이 바뀌면 월 구분 헤더 추가 (가로 전체 차지)
-            if (currentMonth !== itemMonth) {
-                currentMonth = itemMonth;
-                const monthDivider = document.createElement('div');
-                monthDivider.className = "col-span-1 md:col-span-5 text-left py-4 mt-8 border-b-2 border-blue-800";
-                monthDivider.innerHTML = `<h3 class="text-2xl font-black text-blue-800 italic">${currentMonth}</h3>`;
-                grid.appendChild(monthDivider);
-            }
-
-            // 4. 카드 생성
-            const card = document.createElement('div');
-            card.className = `schedule-card ${isToday ? 'today-card shadow-lg' : ''}`;
-            card.innerHTML = `
-                ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
-                <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div>
-                <div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div>
-                <div class="text-[11px] text-left space-y-3 border-t pt-3">
-                    <div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium leading-tight">${item.am || '-'}</span></div>
-                    <div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium leading-tight">${item.pm || '-'}</span></div>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-
-        // 상단 범위 텍스트 업데이트 (전체 기간 표시)
-        if(allData.length > 0) {
-            rangeText.innerText = `Full Schedule: ${allData.length} Days Sync completed`;
+        async function loadSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=getSchedule");
+                allScheduleData = await res.json();
+                renderSchedule();
+            } catch (e) { grid.innerHTML = "<p class='col-span-5 text-red-400 font-bold py-10'>로드 실패</p>"; }
         }
 
-    } catch (e) { 
-        console.error(e);
-        grid.innerHTML = "<p class='col-span-5 text-red-400 font-bold py-10'>데이터 로드 중 오류가 발생했습니다.</p>"; 
-    }
-}
+        function renderSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            const wrapper = document.getElementById('scheduleWrapper');
+            const rangeText = document.getElementById('currentRangeText');
+            const todayStr = getKSTDateString(new Date());
+            
+            grid.innerHTML = "";
+
+            if (currentView === 'weekly') {
+                wrapper.classList.remove('monthly-mode');
+                const now = new Date();
+                const day = now.getDay();
+                const diffToMon = day === 0 ? -6 : 1 - day;
+                const monday = new Date(new Date().setDate(now.getDate() + diffToMon));
+                const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
+
+                const monStr = getKSTDateString(monday);
+                const friStr = getKSTDateString(friday);
+
+                const thisWeekData = allScheduleData.filter(d => {
+                    const dStr = normalizeDate(d.date);
+                    return dStr >= monStr && dStr <= friStr;
+                });
+
+                renderCards(thisWeekData, grid, todayStr);
+                rangeText.innerText = `${monStr} - ${friStr}`;
+            } else {
+                wrapper.classList.add('monthly-mode');
+                rangeText.innerText = "Scroll to see monthly archive";
+                
+                // 월별로 데이터 그룹화
+                const grouped = {};
+                allScheduleData.sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date))).forEach(item => {
+                    const m = new Date(normalizeDate(item.date)).getMonth() + 1;
+                    if (!grouped[m]) grouped[m] = [];
+                    grouped[m].push(item);
+                });
+
+                Object.keys(grouped).forEach(month => {
+                    const section = document.createElement('div');
+                    section.className = "month-section";
+                    
+                    const title = document.createElement('div');
+                    title.className = "col-span-full text-left border-b-2 border-blue-800 mb-6 pb-2";
+                    title.innerHTML = `<h3 class="text-2xl font-black text-blue-800 italic">${month}월 일정</h3>`;
+                    section.appendChild(title);
+
+                    const subGrid = document.createElement('div');
+                    subGrid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
+                    renderCards(grouped[month], subGrid, todayStr);
+                    
+                    section.appendChild(subGrid);
+                    grid.appendChild(section);
+                });
+            }
+        }
+
+        function renderCards(data, container, todayStr) {
+            if(data.length === 0) {
+                container.innerHTML = "<p class='col-span-5 py-10 text-gray-400'>일정이 없습니다.</p>";
+                return;
+            }
+            data.forEach(item => {
+                const itemDateStr = normalizeDate(item.date);
+                const isToday = itemDateStr === todayStr;
+                container.innerHTML += `
+                    <div class="schedule-card ${isToday ? 'today-card shadow-lg' : ''}">
+                        ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
+                        <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div>
+                        <div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div>
+                        <div class="text-[11px] text-left space-y-3 border-t pt-3">
+                            <div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium leading-tight">${item.am || '-'}</span></div>
+                            <div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium leading-tight">${item.pm || '-'}</span></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('viewTitle').innerText = view === 'weekly' ? 'Weekly Plan' : 'Monthly Archive';
+            
+            const btnW = document.getElementById('btnWeekly');
+            const btnM = document.getElementById('btnMonthly');
+            
+            if(view === 'weekly') {
+                btnW.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm";
+                btnM.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700";
+            } else {
+                btnM.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm";
+                btnW.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700";
+            }
+            renderSchedule();
+        }
+
         function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
         function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
         function formatDate(dStr) { const d = new Date(dStr); return isNaN(d) ? dStr : `${d.getMonth()+1}월 ${d.getDate()}일`; }
