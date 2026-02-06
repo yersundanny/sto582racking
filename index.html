@@ -130,7 +130,43 @@
                 <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
             </div>
         </div>
+<div class="card-container" onclick="openStockModal()">
+    <div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div>
+    <div class="p-8 flex justify-between items-center">
+        <div>
+            <h3 class="text-xl font-bold text-gray-800">Stock Entry</h3>
+            <p class="text-xs text-gray-400 mt-1 uppercase">랙킹 재고 입력</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+</div>
 
+<div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6">
+    <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+        <div class="bg-indigo-600 p-8 text-center text-white">
+            <i class="fas fa-clipboard-list text-5xl mb-3"></i>
+            <h3 class="font-black italic text-xl uppercase tracking-tight">Select Location</h3>
+            <p class="text-[10px] font-bold opacity-80 mt-1">어디의 재고를 입력하시겠습니까?</p>
+        </div>
+        <div class="p-6 space-y-3">
+            <button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" 
+                class="w-full py-4 bg-gray-50 hover:bg-indigo-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
+                <span class="text-indigo-600">A</span> Racking Room A
+            </button>
+            <button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" 
+                class="w-full py-4 bg-gray-50 hover:bg-indigo-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
+                <span class="text-indigo-600">B</span> Racking Room B
+            </button>
+            <button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" 
+                class="w-full py-4 bg-gray-50 hover:bg-indigo-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
+                <span class="text-indigo-600">P2</span> P2 Storage
+            </button>
+            <button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2 hover:text-gray-600 transition">Cancel</button>
+        </div>
+    </div>
+</div>
         <div class="card-container" onclick="location.href='old-vs-new.html'">
             <div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div>
             <div class="p-8 flex justify-between items-center">
