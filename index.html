@@ -10,36 +10,18 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; }
         
-        /* 카드 컨테이너 디자인 */
         .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
-        /* 스케줄 카드 스타일 */
         .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; transition: 0.3s; min-height: 140px; }
         .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
         .today-badge { position: absolute; top: 10px; right: 10px; background: #0058a3; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 99px; }
 
-        /* Monthly 전용: 페이지 전환 효과 스타일 */
-        .monthly-mode {
-            max-height: 700px;
-            overflow-y: auto;
-            scroll-snap-type: y mandatory;
-            padding-right: 8px;
-            scrollbar-width: thin;
-            scrollbar-color: #0058a3 #f1f1f1;
-        }
-        .month-section {
-            scroll-snap-align: start;
-            scroll-margin-top: 10px;
-            padding-bottom: 40px;
-        }
-        
-        /* 비디오 선택 모달 */
-        #videoModal { backdrop-filter: blur(4px); transition: 0.3s; }
-        .modal-content { transform: scale(0.9); transition: 0.3s; }
-        #videoModal.flex .modal-content { transform: scale(1); }
+        /* 월 전환 애니메이션 */
+        #scheduleGrid { transition: opacity 0.2s ease-in-out; }
+        .fade-out { opacity: 0; }
     </style>
 </head>
 <body>
@@ -47,134 +29,57 @@
     <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
         <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
         <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
-        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">Digital Hub for Racking Specialists</p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-8">
         <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5 shadow-sm">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-bullhorn text-blue-600"></i> Live Specialist Notice
-                </h2>
-                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
-            </div>
-            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2">공지사항을 동기화 중입니다...</div>
-            
-            <div id="editorSection" class="hidden mt-4 pt-4 border-t">
-                <div class="flex items-center gap-2 mb-3">
-                    <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
-                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold hover:bg-blue-700 transition">인증</button>
-                </div>
-                <div id="editTools" class="hidden">
-                    <div id="richEditor" contenteditable="true" class="w-full min-h-[80px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2"></div>
-                    <button id="saveBtn" onclick="saveNotice()" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장 및 업데이트</button>
-                </div>
-            </div>
+            <div id="noticeDisplay" class="text-sm text-gray-600 px-2 text-center">공지사항 로딩 중...</div>
         </div>
     </section>
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
-        <div class="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
-                <div>
-                    <h2 id="viewTitle" class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Weekly Plan</h2>
-                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold mt-1 font-mono uppercase tracking-widest italic">Syncing...</p>
+        <div class="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div class="flex items-center gap-4">
+                    <div id="monthNav" class="hidden flex items-center gap-3 bg-gray-50 px-3 py-1 rounded-full border">
+                        <button onclick="changeMonth(-1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-left"></i></button>
+                        <span id="displayMonthLabel" class="font-black text-lg text-gray-800 min-w-[60px] text-center italic">8월</span>
+                        <button onclick="changeMonth(1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div id="weeklyLabel">
+                        <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Weekly Plan</h2>
+                        <p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing...</p>
+                    </div>
                 </div>
-                <div class="flex bg-gray-100 p-1 rounded-xl w-full md:w-auto">
+
+                <div class="flex bg-gray-100 p-1 rounded-xl shadow-inner w-full md:w-auto">
                     <button onclick="switchView('weekly')" id="btnWeekly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm">WEEKLY</button>
                     <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700">MONTHLY</button>
                 </div>
             </div>
             
-            <div id="scheduleWrapper" class="relative transition-all duration-300">
-                <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
-                    <p class="col-span-5 text-center py-10 text-gray-400 italic font-medium">데이터를 불러오는 중입니다...</p>
+            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
                 </div>
-            </div>
         </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="card-container" onclick="location.href='manuals-list.html'">
-            <div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
-        </div>
-        
-        <div class="card-container" onclick="openVideoModal()">
-            <div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
-        </div>
-
-        <div class="card-container" onclick="location.href='location-guide.html'">
-            <div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
-        </div>
-
-        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')">
-            <div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-external-link-alt"></i></div>
-            </div>
-        </div>
-
-        <div class="card-container" onclick="location.href='safety-main.html'">
-            <div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
-        </div>
-
-        <div class="card-container" onclick="location.href='old-vs-new.html'">
-            <div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div>
-            <div class="p-8 flex justify-between items-center">
-                <div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div>
-                <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300"><i class="fas fa-arrow-right"></i></div>
-            </div>
-        </div>
+    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-6 font-bold">Manual Archive</div></div>
+        <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-6 font-bold">Assembly Guide</div></div>
+        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')"><div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div><div class="p-6 font-bold">Stock Check</div></div>
     </section>
-
-    <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
-            <div class="bg-red-600 p-8 text-center text-white">
-                <i class="fab fa-youtube text-5xl mb-3"></i>
-                <h3 class="font-black italic text-xl uppercase tracking-tight">Select Format</h3>
-                <p class="text-[10px] font-bold opacity-80 mt-1">STO 582 ASSEMBLY PLAYLIST</p>
-            </div>
-            <div class="p-6 space-y-3">
-                <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
-                    <i class="fas fa-desktop text-red-600"></i> 가로형 영상 (Desktop)
-                </button>
-                <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
-                    <i class="fas fa-mobile-alt text-red-600"></i> 세로형 영상 (Shorts)
-                </button>
-                <button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2 hover:text-gray-600 transition">Close</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
         let allScheduleData = [];
         let currentView = 'weekly';
+        let viewDate = new Date(); // 현재 보고 있는 날짜 기준
 
         window.addEventListener('DOMContentLoaded', () => {
             fetchNotice();
             loadSchedule();
         });
-
-        function openVideoModal() { document.getElementById('videoModal').classList.remove('hidden'); document.getElementById('videoModal').classList.add('flex'); }
-        function closeVideoModal() { document.getElementById('videoModal').classList.add('hidden'); document.getElementById('videoModal').classList.remove('flex'); }
 
         async function fetchNotice() {
             try {
@@ -184,87 +89,78 @@
         }
 
         async function loadSchedule() {
-            const grid = document.getElementById('scheduleGrid');
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getSchedule");
                 allScheduleData = await res.json();
                 renderSchedule();
-            } catch (e) { grid.innerHTML = "<p class='col-span-5 text-red-400 font-bold py-10'>로드 실패</p>"; }
+            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "데이터 로드 실패"; }
         }
 
         function renderSchedule() {
             const grid = document.getElementById('scheduleGrid');
-            const wrapper = document.getElementById('scheduleWrapper');
-            const rangeText = document.getElementById('currentRangeText');
             const todayStr = getKSTDateString(new Date());
-            
-            grid.innerHTML = "";
+            grid.classList.add('fade-out'); // 전환 애니메이션
 
-            if (currentView === 'weekly') {
-                wrapper.classList.remove('monthly-mode');
-                const now = new Date();
-                const day = now.getDay();
-                const diffToMon = day === 0 ? -6 : 1 - day;
-                const monday = new Date(new Date().setDate(now.getDate() + diffToMon));
-                const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
-
-                const monStr = getKSTDateString(monday);
-                const friStr = getKSTDateString(friday);
-
-                const thisWeekData = allScheduleData.filter(d => {
-                    const dStr = normalizeDate(d.date);
-                    return dStr >= monStr && dStr <= friStr;
-                });
-
-                renderCards(thisWeekData, grid, todayStr);
-                rangeText.innerText = `${monStr} - ${friStr}`;
-            } else {
-                wrapper.classList.add('monthly-mode');
-                rangeText.innerText = "Scroll to see monthly archive";
+            setTimeout(() => {
+                grid.innerHTML = "";
                 
-                // 월별로 데이터 그룹화
-                const grouped = {};
-                allScheduleData.sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date))).forEach(item => {
-                    const m = new Date(normalizeDate(item.date)).getMonth() + 1;
-                    if (!grouped[m]) grouped[m] = [];
-                    grouped[m].push(item);
-                });
-
-                Object.keys(grouped).forEach(month => {
-                    const section = document.createElement('div');
-                    section.className = "month-section";
+                if (currentView === 'weekly') {
+                    document.getElementById('monthNav').classList.add('hidden');
+                    document.getElementById('weeklyLabel').classList.remove('hidden');
                     
-                    const title = document.createElement('div');
-                    title.className = "col-span-full text-left border-b-2 border-blue-800 mb-6 pb-2";
-                    title.innerHTML = `<h3 class="text-2xl font-black text-blue-800 italic">${month}월 일정</h3>`;
-                    section.appendChild(title);
-
-                    const subGrid = document.createElement('div');
-                    subGrid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
-                    renderCards(grouped[month], subGrid, todayStr);
+                    // 주간 필터링 (이번 주 월-금)
+                    const now = new Date();
+                    const day = now.getDay();
+                    const diffToMon = day === 0 ? -6 : 1 - day;
+                    const monday = new Date(new Date().setDate(now.getDate() + diffToMon));
+                    const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
                     
-                    section.appendChild(subGrid);
-                    grid.appendChild(section);
-                });
-            }
+                    const monStr = getKSTDateString(monday);
+                    const friStr = getKSTDateString(friday);
+
+                    const weekData = allScheduleData.filter(d => {
+                        const s = normalizeDate(d.date);
+                        return s >= monStr && s <= friStr;
+                    });
+
+                    renderCards(weekData, grid, todayStr);
+                    document.getElementById('currentRangeText').innerText = `${monStr} - ${friStr}`;
+                } 
+                else {
+                    document.getElementById('monthNav').classList.remove('hidden');
+                    document.getElementById('weeklyLabel').classList.add('hidden');
+                    
+                    const targetYear = viewDate.getFullYear();
+                    const targetMonth = viewDate.getMonth() + 1;
+                    document.getElementById('displayMonthLabel').innerText = `${targetMonth}월`;
+
+                    // 선택된 달의 데이터만 필터링
+                    const monthData = allScheduleData.filter(item => {
+                        const d = new Date(normalizeDate(item.date));
+                        return d.getFullYear() === targetYear && (d.getMonth() + 1) === targetMonth;
+                    }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date)));
+
+                    renderCards(monthData, grid, todayStr);
+                }
+                grid.classList.remove('fade-out');
+            }, 200);
         }
 
         function renderCards(data, container, todayStr) {
-            if(data.length === 0) {
-                container.innerHTML = "<p class='col-span-5 py-10 text-gray-400'>일정이 없습니다.</p>";
+            if (data.length === 0) {
+                container.innerHTML = "<p class='col-span-5 py-20 text-gray-400 italic'>표시할 일정이 없습니다.</p>";
                 return;
             }
             data.forEach(item => {
-                const itemDateStr = normalizeDate(item.date);
-                const isToday = itemDateStr === todayStr;
+                const isToday = normalizeDate(item.date) === todayStr;
                 container.innerHTML += `
-                    <div class="schedule-card ${isToday ? 'today-card shadow-lg' : ''}">
+                    <div class="schedule-card ${isToday ? 'today-card shadow-md' : ''}">
                         ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
                         <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div>
                         <div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div>
-                        <div class="text-[11px] text-left space-y-3 border-t pt-3">
-                            <div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium leading-tight">${item.am || '-'}</span></div>
-                            <div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium leading-tight">${item.pm || '-'}</span></div>
+                        <div class="text-[11px] text-left space-y-2 border-t pt-3 text-gray-600">
+                            <div><span class="font-bold text-[9px] text-gray-400">AM</span> ${item.am || '-'}</div>
+                            <div><span class="font-bold text-[9px] text-gray-400">PM</span> ${item.pm || '-'}</div>
                         </div>
                     </div>
                 `;
@@ -273,31 +169,20 @@
 
         function switchView(view) {
             currentView = view;
-            document.getElementById('viewTitle').innerText = view === 'weekly' ? 'Weekly Plan' : 'Monthly Archive';
-            
-            const btnW = document.getElementById('btnWeekly');
-            const btnM = document.getElementById('btnMonthly');
-            
-            if(view === 'weekly') {
-                btnW.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm";
-                btnM.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700";
-            } else {
-                btnM.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm";
-                btnW.className = "flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700";
-            }
+            viewDate = new Date(); // 뷰 전환 시 항상 오늘 달로 초기화
+            document.getElementById('btnWeekly').className = view === 'weekly' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500';
+            document.getElementById('btnMonthly').className = view === 'monthly' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500';
+            renderSchedule();
+        }
+
+        function changeMonth(diff) {
+            viewDate.setMonth(viewDate.getMonth() + diff);
             renderSchedule();
         }
 
         function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
         function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
         function formatDate(dStr) { const d = new Date(dStr); return isNaN(d) ? dStr : `${d.getMonth()+1}월 ${d.getDate()}일`; }
-        function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
-        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
-        async function saveNotice() {
-            const btn = document.getElementById('saveBtn'); btn.innerText = "저장 중...";
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
-            location.reload();
-        }
     </script>
 </body>
 </html>
