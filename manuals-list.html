@@ -6,11 +6,16 @@
     <title>Manual Archive - STO 582</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; }
         .manual-card { transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #eef2f6; }
         .manual-card:hover { transform: translateY(-3px); border-color: #0058a3; box-shadow: 0 10px 20px -5px rgba(0, 88, 163, 0.1); }
+        /* 썸네일 스타일 */
+        .pdf-thumb { width: 80px; height: 110px; background: #f1f5f9; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+        .pdf-thumb canvas { width: 100%; height: 100%; object-fit: cover; }
+        .pdf-thumb i { position: absolute; color: #cbd5e1; font-size: 1.5rem; z-index: 1; }
     </style>
 </head>
 <body class="py-12 px-6">
@@ -27,10 +32,10 @@
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 bg-gray-50 border-b flex justify-between items-center">
                 <span id="fileCount" class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full uppercase tracking-widest">Checking GitHub...</span>
-                <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest italic">New Window View Mode</span>
+                <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest italic">Live Thumbnail Preview</span>
             </div>
 
-            <div id="manualContainer" class="grid grid-cols-1 gap-3 p-6">
+            <div id="manualContainer" class="grid grid-cols-1 gap-4 p-6">
                 <div class="p-20 text-center text-gray-300">
                     <i class="fas fa-spinner animate-spin text-3xl mb-4"></i>
                     <p class="text-sm font-medium uppercase tracking-widest">Syncing with sto582racking...</p>
@@ -40,17 +45,18 @@
     </div>
 
     <script>
-        // 🛠️ 업데이트된 유선님의 정보
         const GITHUB_USER = "yersundanny"; 
         const GITHUB_REPO = "sto582racking"; 
         const GITHUB_FOLDER = "docs"; 
+
+        // PDF.js 설정
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
         async function fetchManuals() {
             const container = document.getElementById('manualContainer');
             const countDisplay = document.getElementById('fileCount');
 
             try {
-                // 1. GitHub API로 파일 목록 조회
                 const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FOLDER}`);
                 const files = await response.json();
 
@@ -59,47 +65,76 @@
                     countDisplay.innerText = `${pdfFiles.length} MANUALS DETECTED`;
                     
                     if (pdfFiles.length === 0) {
-                        container.innerHTML = `<div class="p-20 text-center text-gray-400 font-medium italic">등록된 매뉴얼이 없습니다. (docs 폴더 확인)</div>`;
+                        container.innerHTML = `<div class="p-20 text-center text-gray-400 font-medium italic">등록된 매뉴얼이 없습니다.</div>`;
                         return;
                     }
 
-                    container.innerHTML = pdfFiles.map(file => {
-                        // 🌟 새 창에서 즉시 보기 URL (GitHub Pages 경로)
-                        // 주의: GitHub Pages가 활성화되어 있어야 합니다.
+                    container.innerHTML = ""; // 기존 스피너 제거
+
+                    pdfFiles.forEach((file, index) => {
                         const viewUrl = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}/${GITHUB_FOLDER}/${encodeURIComponent(file.name)}`;
+                        const canvasId = `pdf-canvas-${index}`;
                         
-                        return `
-                            <div class="manual-card bg-white p-5 rounded-2xl flex items-center justify-between cursor-pointer group" 
+                        const cardHtml = `
+                            <div class="manual-card bg-white p-4 rounded-2xl flex items-center justify-between cursor-pointer group" 
                                  onclick="window.open('${viewUrl}', '_blank')">
-                                <div class="flex items-center gap-5">
-                                    <div class="w-12 h-12 bg-gray-50 text-red-500 rounded-xl flex items-center justify-center text-xl group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
+                                <div class="flex items-center gap-5 overflow-hidden">
+                                    <div class="pdf-thumb">
                                         <i class="fas fa-file-pdf"></i>
+                                        <canvas id="${canvasId}"></canvas>
                                     </div>
-                                    <div>
-                                        <h3 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors">${file.name.replace('.pdf', '')}</h3>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            <span class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">PDF Document</span>
-                                            <span class="text-[9px] text-blue-300 font-bold uppercase tracking-tighter italic">Click to Open</span>
+                                    <div class="overflow-hidden">
+                                        <h3 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate text-sm md:text-base">${file.name.replace('.pdf', '')}</h3>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Manual v1.0</span>
+                                            <span class="text-[9px] text-blue-400 font-bold uppercase tracking-tighter italic">Preview Loaded</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-gray-200 group-hover:bg-blue-50 group-hover:text-blue-500 transition-all">
-                                    <i class="fas fa-external-link-alt text-xs"></i>
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-gray-200 group-hover:bg-blue-50 group-hover:text-blue-500 transition-all flex-shrink-0">
+                                    <i class="fas fa-chevron-right text-xs"></i>
                                 </div>
                             </div>
                         `;
-                    }).join('');
-                } else {
-                    throw new Error();
-                }
+                        container.insertAdjacentHTML('beforeend', cardHtml);
+                        
+                        // 카드 생성 후 썸네일 렌더링 시작
+                        renderThumbnail(viewUrl, canvasId);
+                    });
+
+                } else { throw new Error(); }
             } catch (err) {
-                container.innerHTML = `
-                    <div class="p-20 text-center">
-                        <i class="fas fa-exclamation-triangle text-red-300 text-3xl mb-4"></i>
-                        <p class="text-red-400 text-sm font-bold uppercase">GitHub Sync Failed</p>
-                        <p class="text-gray-400 text-xs mt-2 font-medium italic">저장소 이름(${GITHUB_REPO})과 폴더명(${GITHUB_FOLDER})을 확인하세요.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="p-20 text-center text-red-400">GitHub 연결 실패</div>`;
+            }
+        }
+
+        async function renderThumbnail(url, canvasId) {
+            try {
+                // PDF 파일 로드
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                
+                // 첫 페이지 가져오기
+                const page = await pdf.getPage(1);
+                
+                const canvas = document.getElementById(canvasId);
+                const context = canvas.getContext('2d');
+                
+                // 크기 설정 (썸네일에 맞춤)
+                const viewport = page.getViewport({ scale: 0.3 }); // 작게 렌더링
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                // 로드 완료되면 아이콘 숨김
+                canvas.previousElementSibling.style.display = 'none';
+            } catch (e) {
+                console.error("Thumbnail error:", e);
             }
         }
 
