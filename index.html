@@ -312,6 +312,24 @@
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
             location.reload();
         }
+    // 재고 입력 모달 제어
+function openStockModal() {
+    document.getElementById('stockModal').classList.remove('hidden');
+    document.getElementById('stockModal').classList.add('flex');
+}
+
+function closeStockModal() {
+    document.getElementById('stockModal').classList.add('hidden');
+    document.getElementById('stockModal').classList.remove('flex');
+}
+
+// 모달 바깥 클릭 시 닫기 기능 (선택사항)
+window.onclick = function(event) {
+    const modal = document.getElementById('stockModal');
+    if (event.target == modal) {
+        closeStockModal();
+    }
+}
     </script>
 </body>
 </html>
