@@ -162,48 +162,61 @@
             } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
         }
 
-        async function loadSchedule() {
-            const grid = document.getElementById('scheduleGrid');
-            const rangeText = document.getElementById('currentRangeText');
-            try {
-                const res = await fetch(SCRIPT_URL + "?action=getSchedule");
-                const allData = await res.json();
-                
-                const now = new Date();
-                const day = now.getDay();
-                const diffToMon = day === 0 ? -6 : 1 - day;
-                const monday = new Date(new Date().setDate(now.getDate() + diffToMon));
-                const friday = new Date(monday); friday.setDate(monday.getDate() + 4);
+async function loadSchedule() {
+    const grid = document.getElementById('scheduleGrid');
+    const rangeText = document.getElementById('currentRangeText');
+    
+    try {
+        const res = await fetch(SCRIPT_URL + "?action=getSchedule");
+        let allData = await res.json();
+        
+        // 1. 날짜 순으로 정렬
+        allData.sort((a, b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date)));
 
-                const monStr = getKSTDateString(monday);
-                const friStr = getKSTDateString(friday);
-                const todayStr = getKSTDateString(now);
+        grid.innerHTML = "";
+        let currentMonth = "";
 
-                const thisWeekData = allData.filter(d => {
-                    const dStr = normalizeDate(d.date);
-                    return dStr >= monStr && dStr <= friStr;
-                });
+        // 2. 전체 데이터 순회하며 렌더링
+        allData.forEach(item => {
+            const itemDateStr = normalizeDate(item.date);
+            const itemDate = new Date(itemDateStr);
+            const itemMonth = (itemDate.getMonth() + 1) + "월"; // 현재 아이템의 월
+            const isToday = itemDateStr === getKSTDateString(new Date());
 
-                grid.innerHTML = "";
-                thisWeekData.forEach(item => {
-                    const itemDateStr = normalizeDate(item.date);
-                    const isToday = itemDateStr === todayStr;
-                    grid.innerHTML += `
-                        <div class="schedule-card ${isToday ? 'today-card shadow-lg' : ''}">
-                            ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
-                            <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div>
-                            <div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div>
-                            <div class="text-[11px] text-left space-y-3 border-t pt-3">
-                                <div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium leading-tight">${item.am || '-'}</span></div>
-                                <div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium leading-tight">${item.pm || '-'}</span></div>
-                            </div>
-                        </div>
-                    `;
-                });
-                rangeText.innerText = `${monStr} - ${friStr}`;
-            } catch (e) { grid.innerHTML = "<p class='col-span-5 text-red-400 font-bold py-10'>로드 실패</p>"; }
+            // 3. 월이 바뀌면 월 구분 헤더 추가 (가로 전체 차지)
+            if (currentMonth !== itemMonth) {
+                currentMonth = itemMonth;
+                const monthDivider = document.createElement('div');
+                monthDivider.className = "col-span-1 md:col-span-5 text-left py-4 mt-8 border-b-2 border-blue-800";
+                monthDivider.innerHTML = `<h3 class="text-2xl font-black text-blue-800 italic">${currentMonth}</h3>`;
+                grid.appendChild(monthDivider);
+            }
+
+            // 4. 카드 생성
+            const card = document.createElement('div');
+            card.className = `schedule-card ${isToday ? 'today-card shadow-lg' : ''}`;
+            card.innerHTML = `
+                ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
+                <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div>
+                <div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div>
+                <div class="text-[11px] text-left space-y-3 border-t pt-3">
+                    <div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium leading-tight">${item.am || '-'}</span></div>
+                    <div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium leading-tight">${item.pm || '-'}</span></div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // 상단 범위 텍스트 업데이트 (전체 기간 표시)
+        if(allData.length > 0) {
+            rangeText.innerText = `Full Schedule: ${allData.length} Days Sync completed`;
         }
 
+    } catch (e) { 
+        console.error(e);
+        grid.innerHTML = "<p class='col-span-5 text-red-400 font-bold py-10'>데이터 로드 중 오류가 발생했습니다.</p>"; 
+    }
+}
         function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
         function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
         function formatDate(dStr) { const d = new Date(dStr); return isNaN(d) ? dStr : `${d.getMonth()+1}월 ${d.getDate()}일`; }
