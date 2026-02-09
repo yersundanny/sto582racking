@@ -121,6 +121,22 @@
     <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Cancel</button></div></div></div>
 
     <script>
+        // 스타일 명령 실행 함수
+function execCmd(command, value = null) {
+    document.execCommand(command, false, value);
+    document.getElementById('richEditor').focus();
+}
+
+// 기존 checkAuth 함수 수정 (에디터 열릴 때 기존 내용 불러오기)
+function checkAuth() { 
+    if(document.getElementById('adminPw').value === "sto582") { 
+        document.getElementById('editTools').classList.remove('hidden'); 
+        // 현재 화면에 보이는 공지사항 내용을 에디터로 복사
+        document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; 
+    } else {
+        alert("비밀번호가 틀렸습니다.");
+    }
+}
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
         let allScheduleData = [];
         let currentView = 'weekly';
