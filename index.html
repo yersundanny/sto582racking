@@ -25,7 +25,6 @@
         #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; }
         .modal-content { transform: scale(0.9); transition: 0.3s; }
         .flex .modal-content { transform: scale(1); }
-        body { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body>
@@ -33,26 +32,26 @@
     <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
         <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
         <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
-        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 text-blue-800">Digital Hub for Racking Specialists</p>
+        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 text-blue-800">Digital Hub for Cowerkers</p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-8">
         <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5 shadow-sm">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-bullhorn text-blue-600"></i> Live Specialist Notice
+                    <i class="fas fa-bullhorn text-blue-600"></i> Specialist Notice
                 </h2>
-                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
+                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase">Edit</button>
             </div>
-            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2">공지사항 동기화 중...</div>
+            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2">로딩 중...</div>
             <div id="editorSection" class="hidden mt-4 pt-4 border-t">
                 <div class="flex items-center gap-2 mb-3">
                     <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
-                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold hover:bg-blue-700 transition">인증</button>
+                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
                 </div>
                 <div id="editTools" class="hidden">
-                    <div id="richEditor" contenteditable="true" class="w-full min-h-[80px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2"></div>
-                    <button id="saveBtn" onclick="saveNotice()" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장</button>
+                    <div id="richEditor" contenteditable="true" class="w-full min-h-[80px] p-3 border rounded-xl bg-white text-sm mb-2"></div>
+                    <button onclick="saveNotice()" id="saveBtn" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold">저장</button>
                 </div>
             </div>
         </div>
@@ -61,16 +60,9 @@
     <section class="max-w-6xl mx-auto px-6 mb-12">
         <div class="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div class="flex items-center gap-4">
-                    <div id="monthNav" class="hidden flex items-center gap-3 bg-gray-50 px-3 py-1 rounded-full border text-blue-800">
-                        <button onclick="changeMonth(-1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-left"></i></button>
-                        <span id="displayMonthLabel" class="font-black text-lg text-gray-800 min-w-[60px] text-center italic">월</span>
-                        <button onclick="changeMonth(1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div id="weeklyLabel">
-                        <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Weekly Plan</h2>
-                        <p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing...</p>
-                    </div>
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Plan View</h2>
+                    <p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing with Google Sheets...</p>
                 </div>
                 <div class="flex bg-gray-100 p-1 rounded-xl shadow-inner w-full md:w-auto">
                     <button onclick="switchView('weekly')" id="btnWeekly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm">WEEKLY</button>
@@ -82,47 +74,17 @@
     </section>
 
     <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div><div class="text-gray-300"><i class="fas fa-arrow-right"></i></div></div></div>
-        
-        <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div><div class="text-gray-300"><i class="fas fa-arrow-right"></i></div></div></div>
-        
-        <div class="card-container" onclick="location.href='location-guide.html'"><div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div><div class="text-gray-300"><i class="fas fa-arrow-right"></i></div></div></div>
-        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')"><div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div><div class="text-gray-300"><i class="fas fa-external-link-alt"></i></div></div></div>
-        <div class="card-container" onclick="location.href='safety-main.html'"><div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div><div class="text-gray-300"><i class="fas fa-arrow-right"></i></div></div></div>
-        <div class="card-container" onclick="openStockModal()"><div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Entry</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 재고 입력</p></div><div class="text-gray-300"><i class="fas fa-plus"></i></div></div></div>
-        <div class="card-container" onclick="location.href='old-vs-new.html'"><div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div><div class="text-gray-300"><i class="fas fa-arrow-right"></i></div></div></div>
+        <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='location-guide.html'"><div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')"><div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div><i class="fas fa-external-link-alt text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='safety-main.html'"><div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="openStockModal()"><div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Entry</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 재고 입력</p></div><i class="fas fa-plus text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='old-vs-new.html'"><div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
     </section>
 
-    <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
-            <div class="bg-red-600 p-8 text-center text-white">
-                <i class="fab fa-youtube text-5xl mb-3"></i>
-                <h3 class="font-black italic text-xl uppercase tracking-tight">Select Format</h3>
-                <p class="text-[10px] font-bold opacity-80 mt-1 uppercase">STO 582 Assembly Playlist</p>
-            </div>
-            <div class="p-6 space-y-3">
-                <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
-                    <i class="fas fa-desktop text-red-600"></i> 가로형 영상 (Desktop)
-                </button>
-                <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 hover:bg-red-50 text-gray-800 font-bold rounded-2xl border transition-all flex items-center justify-center gap-3">
-                    <i class="fas fa-mobile-alt text-red-600"></i> 세로형 영상 (Shorts)
-                </button>
-                <button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
-            <div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div>
-            <div class="p-6 space-y-3">
-                <button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3"><span class="text-indigo-600">A</span> Racking Room A</button>
-                <button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3"><span class="text-indigo-600">B</span> Racking Room B</button>
-                <button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3"><span class="text-indigo-600">P2</span> P2 Storage</button>
-                <button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3"><i class="fas fa-desktop text-red-600"></i> 가로형 영상</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3"><i class="fas fa-mobile-alt text-red-600"></i> 세로형 영상</button><button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Close</button></div></div></div>
+    <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">Racking Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">Racking Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Cancel</button></div></div></div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
@@ -156,9 +118,9 @@
             const grid = document.getElementById('scheduleGrid');
             const todayStr = getKSTDateString(new Date());
             grid.innerHTML = "";
+            
             if (currentView === 'weekly') {
                 document.getElementById('monthNav').classList.add('hidden');
-                document.getElementById('weeklyLabel').classList.remove('hidden');
                 const now = new Date();
                 const diff = now.getDay() === 0 ? -6 : 1 - now.getDay();
                 const mon = new Date(new Date().setDate(now.getDate() + diff));
@@ -169,19 +131,18 @@
                 document.getElementById('currentRangeText').innerText = `${monStr} - ${friStr}`;
             } else {
                 document.getElementById('monthNav').classList.remove('hidden');
-                document.getElementById('weeklyLabel').classList.add('hidden');
-                const targetY = viewDate.getFullYear(), targetM = viewDate.getMonth() + 1;
+                const targetM = viewDate.getMonth() + 1;
                 document.getElementById('displayMonthLabel').innerText = `${targetM}월`;
                 const monthData = allScheduleData.filter(item => {
                     const d = new Date(normalizeDate(item.date));
-                    return d.getFullYear() === targetY && (d.getMonth() + 1) === targetM;
+                    return d.getFullYear() === viewDate.getFullYear() && (d.getMonth() + 1) === targetM;
                 }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date)));
                 renderCards(monthData, grid, todayStr);
             }
         }
 
         function renderCards(data, container, todayStr) {
-            if (data.length === 0) { container.innerHTML = "<p class='col-span-5 py-20 text-gray-400 italic'>일정이 없습니다.</p>"; return; }
+            if (data.length === 0) { container.innerHTML = "<p class='col-span-5 py-20 text-gray-400 italic'>데이터가 없습니다.</p>"; return; }
             data.forEach(item => {
                 const isToday = normalizeDate(item.date) === todayStr;
                 container.innerHTML += `<div class="schedule-card ${isToday ? 'today-card shadow-md' : ''}">${isToday ? '<span class="today-badge">TODAY</span>' : ''}<div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">${item.day}요일</div><div class="text-sm font-bold mb-3 text-gray-900">${formatDate(item.date)}</div><div class="text-[11px] text-left space-y-3 border-t pt-3"><div class="flex flex-col"><span class="text-[9px] font-bold text-gray-400 uppercase italic">AM</span> <span class="text-gray-700 font-medium">${item.am || '-'}</span></div><div class="flex flex-col pt-1"><span class="text-[9px] font-bold text-gray-400 uppercase italic">PM</span> <span class="text-gray-700 font-medium">${item.pm || '-'}</span></div></div></div>`;
@@ -201,7 +162,7 @@
         function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
         function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
         async function saveNotice() {
-            const btn = document.getElementById('saveBtn'); btn.innerText = "저장 중...";
+            document.getElementById('saveBtn').innerText = "저장 중...";
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
             location.reload();
         }
