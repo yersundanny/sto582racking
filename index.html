@@ -4,83 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STO 582 Racking Archive</title>
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="STO 582">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; -webkit-tap-highlight-color: transparent; }
+        
         .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
-        .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; }
-        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; min-height: 110px; }
+        .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
+        .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
+        
+        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; min-height: 120px; }
         .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
         .today-badge { position: absolute; top: 6px; right: 6px; background: #0058a3; color: white; font-size: 8px; font-weight: 900; padding: 1px 5px; border-radius: 99px; }
-        .sun { color: #ef4444; } .sat { color: #3b82f6; }
-        #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; z-index: 100; }
+
+        /* 월간 달력 전용 스타일 */
+        .grid-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+        .sun { color: #ef4444; } /* 일요일 빨간색 */
+        .sat { color: #3b82f6; } /* 토요일 파란색 */
+
+        #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; }
+        .modal-content { transform: scale(0.9); transition: 0.3s; }
+        .flex .modal-content { transform: scale(1); }
+        body { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body>
 
-    <header class="pt-12 pb-8 px-6 max-w-6xl mx-auto flex justify-between items-end">
-        <div>
-            <h1 class="text-4xl font-black text-blue-800 italic uppercase">STO 582 Racking</h1>
-            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest">Digital Hub for Specialists</p>
-        </div>
-        <button onclick="location.href='mypage.html'" class="w-10 h-10 bg-white border rounded-full flex items-center justify-center text-gray-400 shadow-sm"><i class="fas fa-user"></i></button>
+    <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
+        <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
+        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 text-blue-800">Digital Hub for Racking Specialists</p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-8">
         <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5 shadow-sm">
-            <h2 class="text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest"><i class="fas fa-bullhorn text-blue-600 mr-1"></i> Live Notice</h2>
-            <div id="noticeDisplay" class="text-sm text-gray-700 font-medium leading-relaxed italic">공지사항을 불러오는 중...</div>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fas fa-bullhorn text-blue-600"></i> Specialist Notice
+                </h2>
+                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
+            </div>
+            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2 italic">동기화 중...</div>
+            <div id="editorSection" class="hidden mt-4 pt-4 border-t">
+                <div class="flex items-center gap-2 mb-3">
+                    <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
+                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
+                </div>
+                <div id="editTools" class="hidden">
+                    <div id="richEditor" contenteditable="true" class="w-full min-h-[80px] p-3 border rounded-xl bg-white text-sm mb-2"></div>
+                    <button onclick="saveNotice()" id="saveBtn" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold">저장</button>
+                </div>
+            </div>
         </div>
     </section>
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
-        <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div class="bg-white border border-gray-100 rounded-3xl p-4 md:p-8 shadow-sm">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <div class="flex items-center gap-4">
-                    <div id="monthNav" class="hidden flex items-center gap-3 bg-gray-50 px-3 py-1 rounded-full border">
-                        <button onclick="changeMonth(-1)"><i class="fas fa-chevron-left text-blue-800"></i></button>
-                        <span id="displayMonthLabel" class="font-black text-lg text-gray-800 min-w-[50px] text-center">월</span>
-                        <button onclick="changeMonth(1)"><i class="fas fa-chevron-right text-blue-800"></i></button>
+                    <div id="monthNav" class="hidden flex items-center gap-3 bg-gray-50 px-3 py-1 rounded-full border text-blue-800">
+                        <button onclick="changeMonth(-1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-left"></i></button>
+                        <span id="displayMonthLabel" class="font-black text-lg text-gray-800 min-w-[60px] text-center italic">월</span>
+                        <button onclick="changeMonth(1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <div id="weeklyLabel"><h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Plan View</h2><p id="currentRangeText" class="text-[10px] text-blue-600 font-bold font-mono">Syncing...</p></div>
+                    <div id="weeklyLabel">
+                        <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Plan View</h2>
+                        <p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing...</p>
+                    </div>
                 </div>
-                <div class="flex bg-gray-100 p-1 rounded-xl shadow-inner">
-                    <button onclick="switchView('weekly')" id="btnWeekly" class="px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm">WEEKLY</button>
-                    <button onclick="switchView('monthly')" id="btnMonthly" class="px-6 py-2 text-xs font-bold rounded-lg text-gray-500">MONTHLY</button>
+                <div class="flex bg-gray-100 p-1 rounded-xl shadow-inner w-full md:w-auto">
+                    <button onclick="switchView('weekly')" id="btnWeekly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm">WEEKLY</button>
+                    <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700">MONTHLY</button>
                 </div>
             </div>
-            <div id="calendarHeader" class="hidden grid grid-cols-7 gap-1 mb-2 text-[9px] font-black uppercase text-center text-gray-400">
+            
+            <div id="calendarHeader" class="hidden grid grid-cols-7 gap-2 mb-2 text-[10px] font-black uppercase text-center text-gray-400">
                 <div class="sun">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="sat">Sat</div>
             </div>
-            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-3"></div>
+
+            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
         </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Manual Archive</h3><i class="fas fa-chevron-right text-gray-200"></i></div></div>
-        <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Assembly Guide</h3><i class="fas fa-chevron-right text-gray-200"></i></div></div>
-        <div class="card-container" onclick="location.href='location-guide.html'"><div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Location Guide</h3><i class="fas fa-chevron-right text-gray-200"></i></div></div>
-        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')"><div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Stock Check</h3><i class="fas fa-external-link-alt text-gray-200"></i></div></div>
-        <div class="card-container" onclick="location.href='safety-main.html'"><div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Safety Center</h3><i class="fas fa-chevron-right text-gray-200"></i></div></div>
-        <div class="card-container" onclick="openStockModal()"><div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Stock Entry</h3><i class="fas fa-plus text-gray-200"></i></div></div>
-        <div class="card-container" onclick="location.href='old-vs-new.html'"><div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div><div class="p-6 flex justify-between items-center"><h3 class="font-bold text-gray-800">Old vs New</h3><i class="fas fa-chevron-right text-gray-200"></i></div></div>
+    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='location-guide.html'"><div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')"><div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div><i class="fas fa-external-link-alt text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='safety-main.html'"><div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="openStockModal()"><div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Entry</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 재고 입력</p></div><i class="fas fa-plus text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='old-vs-new.html'"><div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
     </section>
 
-    <div id="videoModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-xs rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-6 text-center text-white"><h3 class="font-black italic uppercase">Select Format</h3></div><div class="p-5 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-2">가로형 (Desktop)</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-2">세로형 (Shorts)</button><button onclick="closeVideoModal()" class="w-full py-2 text-[10px] font-bold text-gray-400 uppercase">Close</button></div></div></div>
-    <div id="stockModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-xs rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-6 text-center text-white"><h3 class="font-black italic uppercase">Select Location</h3></div><div class="p-5 space-y-2"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-2 text-[10px] font-bold text-gray-400 uppercase">Cancel</button></div></div></div>
+    <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">가로형 영상 (Desktop)</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">세로형 영상 (Shorts)</button><button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Close</button></div></div></div>
+    <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Cancel</button></div></div></div>
 
     <script>
-        const SCRIPT_URL = "여기에_새로_배포한_URL을_넣으세요";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
         let allScheduleData = [];
-        let currentView = 'weekly', viewDate = new Date();
+        let currentView = 'weekly';
+        let viewDate = new Date();
 
-        window.onload = () => { fetchNotice(); loadSchedule(); };
+        window.addEventListener('DOMContentLoaded', () => { fetchNotice(); loadSchedule(); });
+
         function openVideoModal() { document.getElementById('videoModal').classList.replace('hidden', 'flex'); }
         function closeVideoModal() { document.getElementById('videoModal').classList.replace('flex', 'hidden'); }
         function openStockModal() { document.getElementById('stockModal').classList.replace('hidden', 'flex'); }
@@ -89,8 +123,8 @@
         async function fetchNotice() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getNotice");
-                document.getElementById('noticeDisplay').innerText = await res.text() || "공지사항이 없습니다.";
-            } catch (e) { document.getElementById('noticeDisplay').innerText = "Notice Sync Error"; }
+                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지사항이 없습니다.';
+            } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
         }
 
         async function loadSchedule() {
@@ -98,53 +132,91 @@
                 const res = await fetch(SCRIPT_URL + "?action=getSchedule");
                 allScheduleData = await res.json();
                 renderSchedule();
-            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "로드 실패"; }
+            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "<p class='col-span-full py-10 text-red-400 font-bold'>로드 실패</p>"; }
         }
 
         function renderSchedule() {
-            const grid = document.getElementById('scheduleGrid'), calHeader = document.getElementById('calendarHeader');
+            const grid = document.getElementById('scheduleGrid');
+            const calHeader = document.getElementById('calendarHeader');
             const todayStr = getKSTDateString(new Date());
             grid.innerHTML = "";
             
             if (currentView === 'weekly') {
-                document.getElementById('monthNav').classList.add('hidden'); calHeader.classList.add('hidden');
-                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-3";
-                const diff = new Date().getDay() === 0 ? -6 : 1 - new Date().getDay();
-                const mon = new Date(new Date().setDate(new Date().getDate() + diff)), fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+                document.getElementById('monthNav').classList.add('hidden');
+                calHeader.classList.add('hidden');
+                document.getElementById('weeklyLabel').classList.remove('hidden');
+                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
+                
+                const now = new Date();
+                const diff = now.getDay() === 0 ? -6 : 1 - now.getDay();
+                const mon = new Date(new Date().setDate(now.getDate() + diff));
+                const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
                 const monStr = getKSTDateString(mon), friStr = getKSTDateString(fri);
-                renderCards(allScheduleData.filter(d => normalizeDate(d.date) >= monStr && normalizeDate(d.date) <= friStr), grid, todayStr, false);
+                
+                const weekData = allScheduleData.filter(d => normalizeDate(d.date) >= monStr && normalizeDate(d.date) <= friStr);
+                renderCards(weekData, grid, todayStr, false);
                 document.getElementById('currentRangeText').innerText = `${monStr} - ${friStr}`;
             } else {
-                document.getElementById('monthNav').classList.remove('hidden'); calHeader.classList.remove('hidden');
+                document.getElementById('monthNav').classList.remove('hidden');
+                calHeader.classList.remove('hidden');
+                document.getElementById('weeklyLabel').classList.add('hidden');
+                // 🌟 월간 모드일 때 7열 레이아웃 적용
                 grid.className = "grid grid-cols-7 gap-1 md:gap-2";
+                
                 const targetY = viewDate.getFullYear(), targetM = viewDate.getMonth() + 1;
                 document.getElementById('displayMonthLabel').innerText = `${targetM}월`;
-                const firstDay = new Date(targetY, targetM - 1, 1).getDay();
-                for(let i=0; i<firstDay; i++) { grid.innerHTML += "<div></div>"; }
-                renderCards(allScheduleData.filter(item => {
+                
+                const firstDay = new Date(targetY, targetM - 1, 1).getDay(); // 해당 월 1일의 요일
+                for(let i=0; i<firstDay; i++) { grid.innerHTML += "<div></div>"; } // 빈칸 채우기
+
+                const monthData = allScheduleData.filter(item => {
                     const d = new Date(normalizeDate(item.date));
                     return d.getFullYear() === targetY && (d.getMonth() + 1) === targetM;
-                }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date))), grid, todayStr, true);
+                }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date)));
+                
+                renderCards(monthData, grid, todayStr, true);
             }
         }
 
         function renderCards(data, container, todayStr, isMonthly) {
             data.forEach(item => {
-                const itemDate = new Date(normalizeDate(item.date)), isToday = normalizeDate(item.date) === todayStr;
-                let colorClass = itemDate.getDay() === 0 ? "sun" : (itemDate.getDay() === 6 ? "sat" : "");
-                container.innerHTML += `<div class="schedule-card ${isToday ? 'today-card shadow-md' : ''} ${isMonthly ? 'text-[8px] min-h-[70px]' : ''}">${isToday ? '<span class="today-badge">TODAY</span>' : ''}<div class="font-black ${colorClass} mb-1 uppercase tracking-tighter">${item.day}</div><div class="${isMonthly ? 'text-[9px]' : 'text-sm'} font-bold mb-2">${itemDate.getDate()}일</div><div class="text-left space-y-1 border-t pt-2 overflow-hidden"><div><span class="text-gray-400 font-bold italic">A</span> ${item.am || '-'}</div><div><span class="text-gray-400 font-bold italic">P</span> ${item.pm || '-'}</div></div></div>`;
+                const itemDate = new Date(normalizeDate(item.date));
+                const isToday = normalizeDate(item.date) === todayStr;
+                const dayOfWeek = itemDate.getDay();
+                let colorClass = "";
+                if(dayOfWeek === 0) colorClass = "sun";
+                if(dayOfWeek === 6) colorClass = "sat";
+
+                container.innerHTML += `
+                    <div class="schedule-card ${isToday ? 'today-card shadow-md' : ''} ${isMonthly ? 'text-[9px] min-h-[80px]' : ''}">
+                        ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
+                        <div class="font-black ${colorClass} mb-1 uppercase tracking-tighter">${item.day}</div>
+                        <div class="${isMonthly ? 'text-[10px]' : 'text-sm'} font-bold mb-2 text-gray-900">${itemDate.getDate()}일</div>
+                        <div class="text-left space-y-1 border-t pt-2 overflow-hidden">
+                            <div class="truncate"><span class="text-gray-400 font-bold italic">A</span> ${item.am || '-'}</div>
+                            <div class="truncate"><span class="text-gray-400 font-bold italic">P</span> ${item.pm || '-'}</div>
+                        </div>
+                    </div>`;
             });
         }
 
         function switchView(view) {
-            currentView = view; viewDate = new Date();
-            document.getElementById('btnWeekly').className = view === 'weekly' ? 'px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'px-6 py-2 text-xs font-bold rounded-lg text-gray-500';
-            document.getElementById('btnMonthly').className = view === 'monthly' ? 'px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'px-6 py-2 text-xs font-bold rounded-lg text-gray-500';
+            currentView = view;
+            viewDate = new Date();
+            document.getElementById('btnWeekly').className = view === 'weekly' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700';
+            document.getElementById('btnMonthly').className = view === 'monthly' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700';
             renderSchedule();
         }
         function changeMonth(diff) { viewDate.setMonth(viewDate.getMonth() + diff); renderSchedule(); }
         function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
         function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+        function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
+        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
+        async function saveNotice() {
+            document.getElementById('saveBtn').innerText = "저장 중...";
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
+            location.reload();
+        }
     </script>
 </body>
 </html>
