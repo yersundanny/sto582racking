@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STO 582 Racking Archive</title>
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="STO 582">
     <link rel="apple-touch-icon" href="icon.png">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -23,16 +24,20 @@
         .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
         .today-badge { position: absolute; top: 6px; right: 6px; background: #0058a3; color: white; font-size: 8px; font-weight: 900; padding: 1px 5px; border-radius: 99px; }
         #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; }
-        .modal-content { transform: scale(0.9); transition: 0.3s; }
         .flex .modal-content { transform: scale(1); }
-        .grid-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
         .sun { color: #ef4444; } .sat { color: #3b82f6; }
     </style>
 </head>
 <body>
-    <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
-        <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
-        <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
+
+    <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center flex justify-between items-end">
+        <div class="text-left">
+            <h1 class="text-4xl md:text-5xl font-black mb-1 text-blue-800 italic uppercase">STO 582 Racking</h1>
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest">Digital Archive for Specialists</p>
+        </div>
+        <button onclick="location.href='mypage.html'" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition">
+            <i class="fas fa-user-circle text-xl"></i>
+        </button>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
@@ -44,14 +49,11 @@
                         <span id="displayMonthLabel" class="font-black text-lg min-w-[60px] text-center italic">월</span>
                         <button onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <div id="weeklyLabel">
-                        <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Plan View</h2>
-                        <p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing...</p>
-                    </div>
+                    <div id="weeklyLabel"><h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Plan View</h2><p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing...</p></div>
                 </div>
                 <div class="flex bg-gray-100 p-1 rounded-xl shadow-inner w-full md:w-auto">
                     <button onclick="switchView('weekly')" id="btnWeekly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm">WEEKLY</button>
-                    <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500">MONTHLY</button>
+                    <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700">MONTHLY</button>
                 </div>
             </div>
             <div id="calendarHeader" class="hidden grid grid-cols-7 gap-2 mb-2 text-[10px] font-black uppercase text-center text-gray-400">
@@ -72,10 +74,10 @@
     </section>
 
     <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">가로형 영상 (Desktop)</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">세로형 영상 (Shorts)</button><button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2 text-center">Close</button></div></div></div>
-    <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2 text-center">Cancel</button></div></div></div>
+    <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2 text-center">Cancel</button></div></div></div>
 
     <script>
-        const SCRIPT_URL = "유선님 배포 URL";
+        const SCRIPT_URL = "유선님의_구글_앱스_스크립트_배포_URL";
         let allScheduleData = [];
         let currentView = 'weekly', viewDate = new Date();
 
