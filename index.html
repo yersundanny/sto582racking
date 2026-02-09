@@ -53,16 +53,29 @@
                 <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
             </div>
             <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2 italic">동기화 중...</div>
-            <div id="editorSection" class="hidden mt-4 pt-4 border-t">
-                <div class="flex items-center gap-2 mb-3">
-                    <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
-                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
-                </div>
-                <div id="editTools" class="hidden">
-                    <div id="richEditor" contenteditable="true" class="w-full min-h-[80px] p-3 border rounded-xl bg-white text-sm mb-2"></div>
-                    <button onclick="saveNotice()" id="saveBtn" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold">저장</button>
-                </div>
-            </div>
+           <div id="editorSection" class="hidden mt-4 pt-4 border-t">
+    <div class="flex items-center gap-2 mb-3">
+        <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
+        <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
+    </div>
+    
+    <div id="editTools" class="hidden">
+        <div class="flex flex-wrap gap-1 mb-2 p-1 bg-gray-50 rounded-lg border">
+            <button onclick="execCmd('bold')" class="p-2 w-8 h-8 flex items-center justify-center bg-white border rounded hover:bg-gray-100" title="굵게"><i class="fas fa-bold text-xs"></i></button>
+            <select onclick="execCmd('fontSize', this.value)" class="text-[10px] px-1 border rounded bg-white outline-none">
+                <option value="2">작게</option>
+                <option value="3" selected>보통</option>
+                <option value="4">크게</option>
+                <option value="5">아주크게</option>
+            </select>
+            <input type="color" oninput="execCmd('foreColor', this.value)" class="w-8 h-8 p-1 bg-white border rounded cursor-pointer" title="글자색">
+            <button onclick="execCmd('insertUnorderedList')" class="p-2 w-8 h-8 flex items-center justify-center bg-white border rounded hover:bg-gray-100"><i class="fas fa-list-ul text-xs"></i></button>
+        </div>
+
+        <div id="richEditor" contenteditable="true" class="w-full min-h-[120px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2 overflow-y-auto"></div>
+        <button onclick="saveNotice()" id="saveBtn" class="w-full py-3 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장 및 업데이트</button>
+    </div>
+</div>
         </div>
     </section>
 
