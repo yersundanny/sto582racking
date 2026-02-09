@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Join Specialist - STO 582</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
+
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+        <div class="bg-blue-800 p-8 text-center text-white">
+            <h1 class="text-2xl font-black italic uppercase tracking-tighter">Join Specialist</h1>
+            <p class="text-[10px] font-bold opacity-70 mt-1 uppercase tracking-widest">Authorized Access Only</p>
+        </div>
+
+        <form id="signupForm" class="p-8 space-y-4">
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-widest">Full Name (ID)</label>
+                <input type="text" id="userName" required placeholder="본인 성함을 입력하세요"
+                    class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-widest">Team</label>
+                <select id="userTeam" required class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold appearance-none">
+                    <option value="">팀을 선택하세요</option>
+                    <option value="Recovery">Recovery</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Logistics">Logistics</option>
+                    <option value="Safety">Safety</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-widest">Password</label>
+                <input type="password" id="userPw" required placeholder="비밀번호 설정"
+                    class="w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold">
+            </div>
+
+            <div class="pt-2">
+                <label class="block text-[10px] font-black text-blue-600 uppercase mb-1 tracking-widest">Invitation Code</label>
+                <input type="text" id="inviteCode" required placeholder="초대 코드를 입력하세요"
+                    class="w-full px-4 py-3 bg-blue-50 border-blue-100 rounded-xl outline-none text-sm font-bold uppercase">
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-4 bg-blue-800 text-white rounded-xl font-black text-sm shadow-lg hover:bg-blue-900 transition-all uppercase mt-4">
+                Create Account
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "유선님의_구글_앱스_스크립트_배포_URL";
+        const MASTER_CODE = "IKEA582";
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const inviteCode = document.getElementById('inviteCode').value.toUpperCase();
+            if (inviteCode !== MASTER_CODE) {
+                alert("❌ 초대 코드가 일치하지 않습니다.");
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "처리 중...";
+            btn.disabled = true;
+
+            const signupData = {
+                action: "signup",
+                userName: document.getElementById('userName').value,
+                userTeam: document.getElementById('userTeam').value,
+                userPw: document.getElementById('userPw').value,
+                inviteCode: inviteCode
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(signupData)
+                });
+                const result = await response.json();
+
+                if (result.result === "success") {
+                    alert("🎉 회원가입 성공! 이제 로그인해 주세요.");
+                    location.href = "login.html";
+                } else {
+                    alert("❌ 오류: " + result.message);
+                }
+            } catch (error) {
+                alert("네트워크 연결 오류가 발생했습니다.");
+            } finally {
+                btn.innerText = "Create Account";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
