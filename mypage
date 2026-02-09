@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - STO 582</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+        <h2 class="text-2xl font-black italic text-blue-800 mb-6 uppercase">My Profile</h2>
+        
+        <div class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase">Name (ID)</label>
+                <div id="displayUserName" class="text-lg font-bold text-gray-800 border-b pb-2">사용자</div>
+            </div>
+
+            <form id="updateForm" class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Team</label>
+                    <select id="newTeam" class="w-full p-3 bg-gray-50 border rounded-xl font-bold mt-1">
+                        <option value="Recovery">Recovery</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Logistics">Logistics</option>
+                        <option value="Safety">Safety</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">New Password (Optional)</label>
+                    <input type="password" id="newPw" placeholder="변경할 때만 입력" class="w-full p-3 bg-gray-50 border rounded-xl font-bold mt-1">
+                </div>
+                <button type="submit" class="w-full py-4 bg-blue-800 text-white rounded-xl font-black uppercase shadow-lg">Update Profile</button>
+            </form>
+            <button onclick="location.href='index.html'" class="w-full text-gray-400 font-bold text-xs uppercase">Back to Home</button>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
+        // 실제 운영 시에는 로그인 후 localStorage 등에 저장된 이름을 가져와야 합니다.
+        const currentUserName = localStorage.getItem('loginName') || "테스트유저"; 
+        document.getElementById('displayUserName').innerText = currentUserName;
+
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerText = "업데이트 중...";
+            
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: "updateProfile",
+                        userName: currentUserName,
+                        newTeam: document.getElementById('newTeam').value,
+                        newPw: document.getElementById('newPw').value
+                    })
+                });
+                const result = await res.json();
+                if(result.result === "success") alert("✅ 정보가 성공적으로 수정되었습니다.");
+            } catch(err) { alert("오류 발생"); }
+            finally { btn.innerText = "Update Profile"; }
+        });
+    </script>
+</body>
+</html>
