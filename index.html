@@ -208,24 +208,51 @@ function checkAuth() {
         }
 
         function renderCards(data, container, todayStr, isMonthly) {
-            data.forEach(item => {
-                const itemDate = new Date(normalizeDate(item.date));
-                const isToday = normalizeDate(item.date) === todayStr;
-                const dayOfWeek = itemDate.getDay();
-                let colorClass = "";
-                if(dayOfWeek === 0) colorClass = "sun";
-                if(dayOfWeek === 6) colorClass = "sat";
+    if (data.length === 0) { 
+        container.innerHTML = "<p class='col-span-full py-20 text-gray-400 italic font-medium'>일정이 없습니다.</p>"; 
+        return; 
+    }
 
-                container.innerHTML += `
-                    <div class="schedule-card ${isToday ? 'today-card shadow-md' : ''} ${isMonthly ? 'text-[9px] min-h-[80px]' : ''}">
-                        ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
-                        <div class="font-black ${colorClass} mb-1 uppercase tracking-tighter">${item.day}</div>
-                        <div class="${isMonthly ? 'text-[10px]' : 'text-sm'} font-bold mb-2 text-gray-900">${itemDate.getDate()}일</div>
-                        <div class="text-left space-y-1 border-t pt-2 overflow-hidden">
-                            <div class="truncate"><span class="text-gray-400 font-bold italic">A</span> ${item.am || '-'}</div>
-                            <div class="truncate"><span class="text-gray-400 font-bold italic">P</span> ${item.pm || '-'}</div>
-                        </div>
-                    </div>`;
+    data.forEach(item => {
+        const itemDate = new Date(normalizeDate(item.date));
+        const isToday = normalizeDate(item.date) === todayStr;
+        const dayOfWeek = itemDate.getDay(); // 0: 일요일, 6: 토요일
+        
+        // 🎨 주말(일, 토)은 빨간색으로 표시
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+        const dayColorClass = isWeekend ? "text-red-500" : "text-blue-600";
+        const dateColorClass = isWeekend ? "text-red-600" : "text-gray-900";
+
+        // 😴 '휴무' 여부 확인 (오전/오후 중 하나라도 휴무면 강조)
+        const isOff = (item.am && item.am.includes("휴무")) || (item.pm && item.pm.includes("휴무"));
+        const bgClass = isOff ? "bg-gray-100 opacity-60" : (isToday ? "bg-blue-50/50" : "bg-white");
+        const borderClass = isToday ? "border-2 border-blue-800" : "border-gray-100";
+
+        container.innerHTML += `
+            <div class="schedule-card rounded-2xl border ${borderClass} ${bgClass} p-4 transition-all ${isMonthly ? 'text-[9px] min-h-[80px]' : 'min-h-[120px] shadow-sm'}">
+                ${isToday ? '<span class="today-badge bg-blue-800 text-white text-[8px] font-black px-2 py-0.5 rounded-full absolute top-2 right-2">TODAY</span>' : ''}
+                
+                <div class="font-black ${dayColorClass} mb-1 uppercase tracking-tighter italic">
+                    ${item.day}요일
+                </div>
+                
+                <div class="${isMonthly ? 'text-[10px]' : 'text-lg'} font-black mb-2 ${dateColorClass}">
+                    ${itemDate.getDate()}일
+                </div>
+                
+                <div class="text-left space-y-1 border-t pt-2 overflow-hidden">
+                    <div class="truncate ${item.am && item.am.includes("휴무") ? 'text-red-400 font-bold' : 'text-gray-700'}">
+                        <span class="text-gray-400 font-bold italic mr-1 text-[8px]">AM</span> ${item.am || '-'}
+                    </div>
+                    <div class="truncate ${item.pm && item.pm.includes("휴무") ? 'text-red-400 font-bold' : 'text-gray-700'}">
+                        <span class="text-gray-400 font-bold italic mr-1 text-[8px]">PM</span> ${item.pm || '-'}
+                    </div>
+                </div>
+                
+                ${isOff ? '<div class="mt-1 text-[8px] font-black text-red-500 tracking-widest text-center">OFF DAY</div>' : ''}
+            </div>`;
+    });
+}
             });
         }
 
