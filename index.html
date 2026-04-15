@@ -21,16 +21,15 @@
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
-        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; min-height: 120px; }
-        .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; position: relative; }
+        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; min-height: 120px; position: relative; }
+        .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; }
         .today-badge { position: absolute; top: 6px; right: 6px; background: #0058a3; color: white; font-size: 8px; font-weight: 900; padding: 1px 5px; border-radius: 99px; }
 
-        /* 월간 달력 전용 스타일 */
-        .grid-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
-        .sun { color: #ef4444; } /* 일요일 빨간색 */
-        .sat { color: #3b82f6; } /* 토요일 파란색 */
+        /* 주말 및 공휴일 빨간색 */
+        .sun, .holiday { color: #ef4444 !important; } 
+        .sat { color: #3b82f6 !important; } 
 
-        #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; }
+        #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; z-index: 100; }
         .modal-content { transform: scale(0.9); transition: 0.3s; }
         .flex .modal-content { transform: scale(1); }
         body { padding-bottom: env(safe-area-inset-bottom); }
@@ -39,9 +38,8 @@
 <body>
 
     <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
-        <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking Archive</h1>
+        <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking</h1>
         <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
-        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 text-blue-800">Digital Hub for Racking Specialists</p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 mb-8">
@@ -53,29 +51,26 @@
                 <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
             </div>
             <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2 italic">동기화 중...</div>
-           <div id="editorSection" class="hidden mt-4 pt-4 border-t">
-    <div class="flex items-center gap-2 mb-3">
-        <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
-        <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
-    </div>
-    
-    <div id="editTools" class="hidden">
-        <div class="flex flex-wrap gap-1 mb-2 p-1 bg-gray-50 rounded-lg border">
-            <button onclick="execCmd('bold')" class="p-2 w-8 h-8 flex items-center justify-center bg-white border rounded hover:bg-gray-100" title="굵게"><i class="fas fa-bold text-xs"></i></button>
-            <select onclick="execCmd('fontSize', this.value)" class="text-[10px] px-1 border rounded bg-white outline-none">
-                <option value="2">작게</option>
-                <option value="3" selected>보통</option>
-                <option value="4">크게</option>
-                <option value="5">아주크게</option>
-            </select>
-            <input type="color" oninput="execCmd('foreColor', this.value)" class="w-8 h-8 p-1 bg-white border rounded cursor-pointer" title="글자색">
-            <button onclick="execCmd('insertUnorderedList')" class="p-2 w-8 h-8 flex items-center justify-center bg-white border rounded hover:bg-gray-100"><i class="fas fa-list-ul text-xs"></i></button>
-        </div>
-
-        <div id="richEditor" contenteditable="true" class="w-full min-h-[120px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2 overflow-y-auto"></div>
-        <button onclick="saveNotice()" id="saveBtn" class="w-full py-3 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장 및 업데이트</button>
-    </div>
-</div>
+            <div id="editorSection" class="hidden mt-4 pt-4 border-t">
+                <div class="flex items-center gap-2 mb-3">
+                    <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
+                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
+                </div>
+                <div id="editTools" class="hidden">
+                    <div class="flex flex-wrap gap-1 mb-2 p-1 bg-gray-50 rounded-lg border">
+                        <button onclick="execCmd('bold')" class="p-2 w-8 h-8 flex items-center justify-center bg-white border rounded hover:bg-gray-100"><i class="fas fa-bold text-xs"></i></button>
+                        <select onchange="execCmd('fontSize', this.value)" class="text-[10px] px-1 border rounded bg-white outline-none">
+                            <option value="2">작게</option>
+                            <option value="3" selected>보통</option>
+                            <option value="4">크게</option>
+                            <option value="5">아주크게</option>
+                        </select>
+                        <input type="color" oninput="execCmd('foreColor', this.value)" class="w-8 h-8 p-1 bg-white border rounded cursor-pointer">
+                    </div>
+                    <div id="richEditor" contenteditable="true" class="w-full min-h-[120px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2 overflow-y-auto"></div>
+                    <button onclick="saveNotice()" id="saveBtn" class="w-full py-3 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장 및 업데이트</button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -98,11 +93,9 @@
                     <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700">MONTHLY</button>
                 </div>
             </div>
-            
             <div id="calendarHeader" class="hidden grid grid-cols-7 gap-2 mb-2 text-[10px] font-black uppercase text-center text-gray-400">
                 <div class="sun">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="sat">Sat</div>
             </div>
-
             <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
         </div>
     </section>
@@ -111,141 +104,114 @@
         <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
         <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
         <div class="card-container" onclick="location.href='location-guide.html'"><div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
-        <div class="card-container" onclick="window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vS8K4qcRhrjAWltpEoweWyh612n-ZxOUg1xb170ynA1ArlL0qJBQv0bQ6Ow-zUgDTC80OCXbJ3QIHfo/pubhtml?gid=2004724448&single=true','_blank')"><div class="icon-wrapper text-orange-500"><i class="fas fa-boxes"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Check</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 확인 (Live)</p></div><i class="fas fa-external-link-alt text-gray-300"></i></div></div>
+        
+        <div class="card-container" onclick="location.href='inventory-status.html'"><div class="icon-wrapper text-blue-800"><i class="fas fa-boxes"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Inventory Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 및 로케이션 현황</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+
         <div class="card-container" onclick="location.href='safety-main.html'"><div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
         <div class="card-container" onclick="openStockModal()"><div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Entry</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 재고 입력</p></div><i class="fas fa-plus text-gray-300"></i></div></div>
-        <div class="card-container" onclick="location.href='old-vs-new.html'"><div class="icon-wrapper text-gray-700"><i class="fas fa-columns"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Old vs New</h3><p class="text-xs text-gray-400 mt-1 uppercase">신규/구형 비교 자료</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        
+        <div class="card-container" onclick="location.href='troubleshooting.html'"><div class="icon-wrapper text-red-600"><i class="fas fa-tools"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">문제 해결 가이드</h3><p class="text-xs text-gray-400 mt-1 uppercase">파손 및 조립 어려움 해결</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
     </section>
 
     <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">가로형 영상 (Desktop)</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">세로형 영상 (Shorts)</button><button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Close</button></div></div></div>
     <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Cancel</button></div></div></div>
 
     <script>
-        // 스타일 명령 실행 함수
-function execCmd(command, value = null) {
-    document.execCommand(command, false, value);
-    document.getElementById('richEditor').focus();
-}
-
-// 기존 checkAuth 함수 수정 (에디터 열릴 때 기존 내용 불러오기)
-function checkAuth() { 
-    if(document.getElementById('adminPw').value === "sto582") { 
-        document.getElementById('editTools').classList.remove('hidden'); 
-        // 현재 화면에 보이는 공지사항 내용을 에디터로 복사
-        document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; 
-    } else {
-        alert("비밀번호가 틀렸습니다.");
-    }
-}
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4P1z72hWZj6QDX4tX2sjO3UOg8ujPc7I3T0hjq8tz3z_dbZRZD7nsF1OGLN-aLCRF/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvB32kzp1j0dE9yo4PyyBAhqCWzRRnlIFcnH8dxvtEtvN9ibxMxwizqS3_ixH86ntVaA/exec";
         let allScheduleData = [];
-        let currentView = 'weekly';
-        let viewDate = new Date();
+        let currentView = 'weekly', viewDate = new Date();
 
-        window.addEventListener('DOMContentLoaded', () => { fetchNotice(); loadSchedule(); });
+        window.onload = () => { fetchNotice(); loadSchedule(); };
 
-        function openVideoModal() { document.getElementById('videoModal').classList.replace('hidden', 'flex'); }
-        function closeVideoModal() { document.getElementById('videoModal').classList.replace('flex', 'hidden'); }
-        function openStockModal() { document.getElementById('stockModal').classList.replace('hidden', 'flex'); }
-        function closeStockModal() { document.getElementById('stockModal').classList.replace('flex', 'hidden'); }
-
+        // 공지사항 함수
+        function execCmd(c, v=null) { document.execCommand(c, false, v); document.getElementById('richEditor').focus(); }
+        function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
+        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
         async function fetchNotice() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getNotice");
                 document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지사항이 없습니다.';
             } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
         }
+        async function saveNotice() {
+            document.getElementById('saveBtn').innerText = "저장 중...";
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "saveNotice", content: document.getElementById('richEditor').innerHTML }) });
+            location.reload();
+        }
 
+        // 스케줄 함수
         async function loadSchedule() {
             try {
                 const res = await fetch(SCRIPT_URL + "?action=getSchedule");
                 allScheduleData = await res.json();
                 renderSchedule();
-            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "<p class='col-span-full py-10 text-red-400 font-bold'>로드 실패</p>"; }
+            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "로드 실패"; }
+        }
+
+        // ✅ 3. 공휴일 판단 로직 추가
+        function isHoliday(date) {
+            const m = date.getMonth() + 1, d = date.getDate();
+            const h = ['1-1', '3-1', '5-5', '6-6', '8-15', '10-3', '10-9', '12-25'];
+            return h.includes(`${m}-${d}`);
         }
 
         function renderSchedule() {
-            const grid = document.getElementById('scheduleGrid');
-            const calHeader = document.getElementById('calendarHeader');
+            const grid = document.getElementById('scheduleGrid'), calHeader = document.getElementById('calendarHeader');
             const todayStr = getKSTDateString(new Date());
             grid.innerHTML = "";
-            
             if (currentView === 'weekly') {
-                document.getElementById('monthNav').classList.add('hidden');
-                calHeader.classList.add('hidden');
-                document.getElementById('weeklyLabel').classList.remove('hidden');
+                document.getElementById('monthNav').classList.add('hidden'); calHeader.classList.add('hidden');
                 grid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
-                
-                const now = new Date();
-                const diff = now.getDay() === 0 ? -6 : 1 - now.getDay();
-                const mon = new Date(new Date().setDate(now.getDate() + diff));
-                const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
-                const monStr = getKSTDateString(mon), friStr = getKSTDateString(fri);
-                
-                const weekData = allScheduleData.filter(d => normalizeDate(d.date) >= monStr && normalizeDate(d.date) <= friStr);
-                renderCards(weekData, grid, todayStr, false);
-                document.getElementById('currentRangeText').innerText = `${monStr} - ${friStr}`;
+                const diff = new Date().getDay() === 0 ? -6 : 1 - new Date().getDay();
+                const mon = new Date(new Date().setDate(new Date().getDate() + diff)), fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+                renderCards(allScheduleData.filter(d => normalizeDate(d.date) >= getKSTDateString(mon) && normalizeDate(d.date) <= getKSTDateString(fri)), grid, todayStr, false);
+                document.getElementById('currentRangeText').innerText = `${getKSTDateString(mon)} - ${getKSTDateString(fri)}`;
             } else {
-                document.getElementById('monthNav').classList.remove('hidden');
-                calHeader.classList.remove('hidden');
-                document.getElementById('weeklyLabel').classList.add('hidden');
-                // 🌟 월간 모드일 때 7열 레이아웃 적용
+                document.getElementById('monthNav').classList.remove('hidden'); calHeader.classList.remove('hidden');
                 grid.className = "grid grid-cols-7 gap-1 md:gap-2";
-                
                 const targetY = viewDate.getFullYear(), targetM = viewDate.getMonth() + 1;
                 document.getElementById('displayMonthLabel').innerText = `${targetM}월`;
-                
-                const firstDay = new Date(targetY, targetM - 1, 1).getDay(); // 해당 월 1일의 요일
-                for(let i=0; i<firstDay; i++) { grid.innerHTML += "<div></div>"; } // 빈칸 채우기
-
-                const monthData = allScheduleData.filter(item => {
+                const firstDay = new Date(targetY, targetM - 1, 1).getDay();
+                for(let i=0; i<firstDay; i++) { grid.innerHTML += "<div></div>"; }
+                renderCards(allScheduleData.filter(item => {
                     const d = new Date(normalizeDate(item.date));
                     return d.getFullYear() === targetY && (d.getMonth() + 1) === targetM;
-                }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date)));
-                
-                renderCards(monthData, grid, todayStr, true);
+                }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date))), grid, todayStr, true);
             }
         }
 
         function renderCards(data, container, todayStr, isMonthly) {
             data.forEach(item => {
-                const itemDate = new Date(normalizeDate(item.date));
-                const isToday = normalizeDate(item.date) === todayStr;
-                const dayOfWeek = itemDate.getDay();
-                let colorClass = "";
-                if(dayOfWeek === 0) colorClass = "sun";
-                if(dayOfWeek === 6) colorClass = "sat";
+                const itemDate = new Date(normalizeDate(item.date)), isToday = normalizeDate(item.date) === todayStr;
+                const dayOfW = itemDate.getDay(), isHoli = isHoliday(itemDate);
+                // ✅ 4. 주말/공휴일 빨간색 표시 적용
+                let colorClass = (dayOfW === 0 || isHoli) ? "sun" : (dayOfW === 6 ? "sat" : "");
+                
+                // ✅ 5. 휴무 강조 로직 적용
+                const isOff = (item.am && item.am.includes("휴무")) || (item.pm && item.pm.includes("휴무"));
+                const bgClass = isOff ? "bg-gray-100 opacity-60" : (isToday ? "today-card" : "bg-white");
 
                 container.innerHTML += `
-                    <div class="schedule-card ${isToday ? 'today-card shadow-md' : ''} ${isMonthly ? 'text-[9px] min-h-[80px]' : ''}">
+                    <div class="schedule-card ${bgClass} ${isMonthly ? 'text-[9px] min-h-[80px]' : ''}">
                         ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
-                        <div class="font-black ${colorClass} mb-1 uppercase tracking-tighter">${item.day}</div>
-                        <div class="${isMonthly ? 'text-[10px]' : 'text-sm'} font-bold mb-2 text-gray-900">${itemDate.getDate()}일</div>
+                        <div class="font-black ${colorClass} mb-1 uppercase tracking-tighter italic">${item.day}요일${isHoli ? ' [公]' : ''}</div>
+                        <div class="${isMonthly ? 'text-[10px]' : 'text-sm'} font-bold mb-2 ${colorClass}">${itemDate.getDate()}일</div>
                         <div class="text-left space-y-1 border-t pt-2 overflow-hidden">
-                            <div class="truncate"><span class="text-gray-400 font-bold italic">A</span> ${item.am || '-'}</div>
-                            <div class="truncate"><span class="text-gray-400 font-bold italic">P</span> ${item.pm || '-'}</div>
+                            <div class="truncate ${item.am && item.am.includes('휴무') ? 'text-red-500 font-bold' : ''}"><span class="text-gray-400 italic mr-1">A</span>${item.am || '-'}</div>
+                            <div class="truncate ${item.pm && item.pm.includes('휴무') ? 'text-red-500 font-bold' : ''}"><span class="text-gray-400 italic mr-1">P</span>${item.pm || '-'}</div>
                         </div>
                     </div>`;
             });
         }
 
-        function switchView(view) {
-            currentView = view;
-            viewDate = new Date();
-            document.getElementById('btnWeekly').className = view === 'weekly' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700';
-            document.getElementById('btnMonthly').className = view === 'monthly' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg bg-white text-blue-600 shadow-sm' : 'flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700';
-            renderSchedule();
-        }
-        function changeMonth(diff) { viewDate.setMonth(viewDate.getMonth() + diff); renderSchedule(); }
+        function switchView(v) { currentView = v; viewDate = new Date(); renderSchedule(); }
+        function changeMonth(d) { viewDate.setMonth(viewDate.getMonth() + d); renderSchedule(); }
         function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
         function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
-        function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
-        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
-        async function saveNotice() {
-            document.getElementById('saveBtn').innerText = "저장 중...";
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "save", content: document.getElementById('richEditor').innerHTML }) });
-            location.reload();
-        }
+        function openVideoModal() { document.getElementById('videoModal').classList.replace('hidden', 'flex'); }
+        function closeVideoModal() { document.getElementById('videoModal').classList.replace('flex', 'hidden'); }
+        function openStockModal() { document.getElementById('stockModal').classList.replace('hidden', 'flex'); }
+        function closeStockModal() { document.getElementById('stockModal').classList.replace('flex', 'hidden'); }
     </script>
 </body>
 </html>
