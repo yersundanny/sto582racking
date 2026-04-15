@@ -13,25 +13,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; -webkit-tap-highlight-color: transparent; }
         
+        /* 카드 공통 스타일 */
         .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
-        .schedule-card { background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px; transition: 0.3s; min-height: 120px; position: relative; }
-        .today-card { border: 2px solid #0058a3 !important; background-color: #f0f7ff !important; }
-        .today-badge { position: absolute; top: 6px; right: 6px; background: #0058a3; color: white; font-size: 8px; font-weight: 900; padding: 1px 5px; border-radius: 99px; }
-
-        /* 주말 및 공휴일 빨간색 */
-        .sun, .holiday { color: #ef4444 !important; } 
-        .sat { color: #3b82f6 !important; } 
-
-        #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; z-index: 100; }
-        .modal-content { transform: scale(0.9); transition: 0.3s; }
-        .flex .modal-content { transform: scale(1); }
         body { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
@@ -42,176 +32,119 @@
         <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
     </header>
 
-    <section class="max-w-6xl mx-auto px-6 mb-8">
-        <div class="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-5 shadow-sm">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-bullhorn text-blue-600"></i> Specialist Notice
-                </h2>
-                <button onclick="toggleEditor()" class="text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded border uppercase transition hover:bg-gray-100">Edit</button>
-            </div>
-            <div id="noticeDisplay" class="min-h-[50px] text-sm text-gray-600 leading-relaxed px-2 italic">동기화 중...</div>
-            <div id="editorSection" class="hidden mt-4 pt-4 border-t">
-                <div class="flex items-center gap-2 mb-3">
-                    <input type="password" id="adminPw" placeholder="Access PW" class="text-xs border p-2 rounded outline-none w-32 focus:border-blue-500">
-                    <button onclick="checkAuth()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded font-bold">인증</button>
-                </div>
-                <div id="editTools" class="hidden">
-                    <div class="flex flex-wrap gap-1 mb-2 p-1 bg-gray-50 rounded-lg border">
-                        <button onclick="execCmd('bold')" class="p-2 w-8 h-8 flex items-center justify-center bg-white border rounded hover:bg-gray-100"><i class="fas fa-bold text-xs"></i></button>
-                        <select onchange="execCmd('fontSize', this.value)" class="text-[10px] px-1 border rounded bg-white outline-none">
-                            <option value="2">작게</option>
-                            <option value="3" selected>보통</option>
-                            <option value="4">크게</option>
-                            <option value="5">아주크게</option>
-                        </select>
-                        <input type="color" oninput="execCmd('foreColor', this.value)" class="w-8 h-8 p-1 bg-white border rounded cursor-pointer">
-                    </div>
-                    <div id="richEditor" contenteditable="true" class="w-full min-h-[120px] p-3 border rounded-xl bg-white text-sm focus:outline-blue-500 mb-2 overflow-y-auto"></div>
-                    <button onclick="saveNotice()" id="saveBtn" class="w-full py-3 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-blue-700 transition">공지 저장 및 업데이트</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="max-w-6xl mx-auto px-6 mb-12">
-        <div class="bg-white border border-gray-100 rounded-3xl p-4 md:p-8 shadow-sm">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <div class="flex items-center gap-4">
-                    <div id="monthNav" class="hidden flex items-center gap-3 bg-gray-50 px-3 py-1 rounded-full border text-blue-800">
-                        <button onclick="changeMonth(-1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-left"></i></button>
-                        <span id="displayMonthLabel" class="font-black text-lg text-gray-800 min-w-[60px] text-center italic">월</span>
-                        <button onclick="changeMonth(1)" class="p-2 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div id="weeklyLabel">
-                        <h2 class="text-2xl font-black text-gray-900 italic uppercase tracking-tighter">Plan View</h2>
-                        <p id="currentRangeText" class="text-xs text-blue-600 font-bold font-mono uppercase italic">Syncing...</p>
-                    </div>
-                </div>
-                <div class="flex bg-gray-100 p-1 rounded-xl shadow-inner w-full md:w-auto">
-                    <button onclick="switchView('weekly')" id="btnWeekly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all bg-white text-blue-600 shadow-sm">WEEKLY</button>
-                    <button onclick="switchView('monthly')" id="btnMonthly" class="flex-1 md:flex-none px-6 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700">MONTHLY</button>
-                </div>
-            </div>
-            <div id="calendarHeader" class="hidden grid grid-cols-7 gap-2 mb-2 text-[10px] font-black uppercase text-center text-gray-400">
-                <div class="sun">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="sat">Sat</div>
-            </div>
-            <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
-        </div>
-    </section>
-
     <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="card-container" onclick="location.href='manuals-list.html'"><div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase">매뉴얼 모음</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
-        <div class="card-container" onclick="openVideoModal()"><div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">조립 가이드 영상</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
-        <div class="card-container" onclick="location.href='location-guide.html'"><div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 위치 안내</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
         
-        <div class="card-container" onclick="location.href='inventory-status.html'"><div class="icon-wrapper text-blue-800"><i class="fas fa-boxes"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Inventory Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">재고 및 로케이션 현황</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='notice.html'">
+            <div class="icon-wrapper text-blue-800">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Specialist Notice</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">공지사항 확인 및 편집</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
 
-        <div class="card-container" onclick="location.href='safety-main.html'"><div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase">안전 교육 센터</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
-        <div class="card-container" onclick="openStockModal()"><div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">Stock Entry</h3><p class="text-xs text-gray-400 mt-1 uppercase">랙킹 재고 입력</p></div><i class="fas fa-plus text-gray-300"></i></div></div>
-        
-        <div class="card-container" onclick="location.href='troubleshooting.html'"><div class="icon-wrapper text-red-600"><i class="fas fa-tools"></i></div><div class="p-8 flex justify-between items-center"><div><h3 class="text-xl font-bold text-gray-800">문제 해결 가이드</h3><p class="text-xs text-gray-400 mt-1 uppercase">파손 및 조립 어려움 해결</p></div><i class="fas fa-arrow-right text-gray-300"></i></div></div>
+        <div class="card-container" onclick="location.href='schedule.html'">
+            <div class="icon-wrapper text-blue-800">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Work Schedule</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">주간 및 월간 스케줄 확인</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" onclick="location.href='inventory-status.html'">
+            <div class="icon-wrapper text-blue-800">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Inventory Center</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">재고 및 로케이션 현황</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" onclick="location.href='manuals-list.html'">
+            <div class="icon-wrapper text-blue-600">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Manual Archive</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">매뉴얼 모음</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" onclick="openVideoModal()">
+            <div class="icon-wrapper text-red-500">
+                <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Assembly Guide</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">조립 가이드 영상</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" onclick="location.href='location-guide.html'">
+            <div class="icon-wrapper text-green-600">
+                <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Location Guide</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">랙킹 위치 안내</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" onclick="location.href='safety-main.html'">
+            <div class="icon-wrapper text-teal-600">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Safety Center</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">안전 교육 센터</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" onclick="location.href='troubleshooting.html'">
+            <div class="icon-wrapper text-red-600">
+                <i class="fas fa-tools"></i>
+            </div>
+            <div class="p-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 uppercase">Troubleshooting</h3>
+                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">파손 및 조립 어려움 해결</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-300"></i>
+            </div>
+        </div>
+
     </section>
 
     <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">가로형 영상 (Desktop)</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">세로형 영상 (Shorts)</button><button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Close</button></div></div></div>
-    <div id="stockModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-indigo-600 p-8 text-center text-white"><i class="fas fa-clipboard-list text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Location</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://script.google.com/macros/s/AKfycbwBpvKlJ_BmTJOHL2UpBLp042UYCmQfffz2gYCNMVETkiGXJA7K9O0hg2xIUO0c3X7Qzg/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room A</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbzwGAbtEy19lrdeZZ1ZZCGXshhHxQbhAnKrmTfabjgceP-Z_jvXNON2c2j-Hz367d6E/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">Racking Room B</button><button onclick="window.open('https://script.google.com/macros/s/AKfycbxZIXNdwB4LVZr8cfADW4R5CqgbBTy4DpwmKpEmOeq0IHdcVtA01im2RR-nVkyoq3Ri/exec','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border">P2 Storage</button><button onclick="closeStockModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Cancel</button></div></div></div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvB32kzp1j0dE9yo4PyyBAhqCWzRRnlIFcnH8dxvtEtvN9ibxMxwizqS3_ixH86ntVaA/exec";
-        let allScheduleData = [];
-        let currentView = 'weekly', viewDate = new Date();
-
-        window.onload = () => { fetchNotice(); loadSchedule(); };
-
-        // 공지사항 함수
-        function execCmd(c, v=null) { document.execCommand(c, false, v); document.getElementById('richEditor').focus(); }
-        function toggleEditor() { document.getElementById('editorSection').classList.toggle('hidden'); }
-        function checkAuth() { if(document.getElementById('adminPw').value === "sto582") { document.getElementById('editTools').classList.remove('hidden'); document.getElementById('richEditor').innerHTML = document.getElementById('noticeDisplay').innerHTML; } }
-        async function fetchNotice() {
-            try {
-                const res = await fetch(SCRIPT_URL + "?action=getNotice");
-                document.getElementById('noticeDisplay').innerHTML = await res.text() || '공지사항이 없습니다.';
-            } catch (e) { document.getElementById('noticeDisplay').innerText = "Sync Error"; }
-        }
-        async function saveNotice() {
-            document.getElementById('saveBtn').innerText = "저장 중...";
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "saveNotice", content: document.getElementById('richEditor').innerHTML }) });
-            location.reload();
-        }
-
-        // 스케줄 함수
-        async function loadSchedule() {
-            try {
-                const res = await fetch(SCRIPT_URL + "?action=getSchedule");
-                allScheduleData = await res.json();
-                renderSchedule();
-            } catch (e) { document.getElementById('scheduleGrid').innerHTML = "로드 실패"; }
-        }
-
-        // ✅ 3. 공휴일 판단 로직 추가
-        function isHoliday(date) {
-            const m = date.getMonth() + 1, d = date.getDate();
-            const h = ['1-1', '3-1', '5-5', '6-6', '8-15', '10-3', '10-9', '12-25'];
-            return h.includes(`${m}-${d}`);
-        }
-
-        function renderSchedule() {
-            const grid = document.getElementById('scheduleGrid'), calHeader = document.getElementById('calendarHeader');
-            const todayStr = getKSTDateString(new Date());
-            grid.innerHTML = "";
-            if (currentView === 'weekly') {
-                document.getElementById('monthNav').classList.add('hidden'); calHeader.classList.add('hidden');
-                grid.className = "grid grid-cols-1 md:grid-cols-5 gap-4";
-                const diff = new Date().getDay() === 0 ? -6 : 1 - new Date().getDay();
-                const mon = new Date(new Date().setDate(new Date().getDate() + diff)), fri = new Date(mon); fri.setDate(mon.getDate() + 4);
-                renderCards(allScheduleData.filter(d => normalizeDate(d.date) >= getKSTDateString(mon) && normalizeDate(d.date) <= getKSTDateString(fri)), grid, todayStr, false);
-                document.getElementById('currentRangeText').innerText = `${getKSTDateString(mon)} - ${getKSTDateString(fri)}`;
-            } else {
-                document.getElementById('monthNav').classList.remove('hidden'); calHeader.classList.remove('hidden');
-                grid.className = "grid grid-cols-7 gap-1 md:gap-2";
-                const targetY = viewDate.getFullYear(), targetM = viewDate.getMonth() + 1;
-                document.getElementById('displayMonthLabel').innerText = `${targetM}월`;
-                const firstDay = new Date(targetY, targetM - 1, 1).getDay();
-                for(let i=0; i<firstDay; i++) { grid.innerHTML += "<div></div>"; }
-                renderCards(allScheduleData.filter(item => {
-                    const d = new Date(normalizeDate(item.date));
-                    return d.getFullYear() === targetY && (d.getMonth() + 1) === targetM;
-                }).sort((a,b) => new Date(normalizeDate(a.date)) - new Date(normalizeDate(b.date))), grid, todayStr, true);
-            }
-        }
-
-        function renderCards(data, container, todayStr, isMonthly) {
-            data.forEach(item => {
-                const itemDate = new Date(normalizeDate(item.date)), isToday = normalizeDate(item.date) === todayStr;
-                const dayOfW = itemDate.getDay(), isHoli = isHoliday(itemDate);
-                // ✅ 4. 주말/공휴일 빨간색 표시 적용
-                let colorClass = (dayOfW === 0 || isHoli) ? "sun" : (dayOfW === 6 ? "sat" : "");
-                
-                // ✅ 5. 휴무 강조 로직 적용
-                const isOff = (item.am && item.am.includes("휴무")) || (item.pm && item.pm.includes("휴무"));
-                const bgClass = isOff ? "bg-gray-100 opacity-60" : (isToday ? "today-card" : "bg-white");
-
-                container.innerHTML += `
-                    <div class="schedule-card ${bgClass} ${isMonthly ? 'text-[9px] min-h-[80px]' : ''}">
-                        ${isToday ? '<span class="today-badge">TODAY</span>' : ''}
-                        <div class="font-black ${colorClass} mb-1 uppercase tracking-tighter italic">${item.day}요일${isHoli ? ' [公]' : ''}</div>
-                        <div class="${isMonthly ? 'text-[10px]' : 'text-sm'} font-bold mb-2 ${colorClass}">${itemDate.getDate()}일</div>
-                        <div class="text-left space-y-1 border-t pt-2 overflow-hidden">
-                            <div class="truncate ${item.am && item.am.includes('휴무') ? 'text-red-500 font-bold' : ''}"><span class="text-gray-400 italic mr-1">A</span>${item.am || '-'}</div>
-                            <div class="truncate ${item.pm && item.pm.includes('휴무') ? 'text-red-500 font-bold' : ''}"><span class="text-gray-400 italic mr-1">P</span>${item.pm || '-'}</div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function switchView(v) { currentView = v; viewDate = new Date(); renderSchedule(); }
-        function changeMonth(d) { viewDate.setMonth(viewDate.getMonth() + d); renderSchedule(); }
-        function normalizeDate(d) { const date = new Date(d); return isNaN(date) ? String(d).trim() : getKSTDateString(date); }
-        function getKSTDateString(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
         function openVideoModal() { document.getElementById('videoModal').classList.replace('hidden', 'flex'); }
         function closeVideoModal() { document.getElementById('videoModal').classList.replace('flex', 'hidden'); }
-        function openStockModal() { document.getElementById('stockModal').classList.replace('hidden', 'flex'); }
-        function closeStockModal() { document.getElementById('stockModal').classList.replace('flex', 'hidden'); }
     </script>
 </body>
 </html>
