@@ -16,14 +16,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@400;700&display=swap');
         body { font-family: 'Inter', 'Noto Sans KR', sans-serif; background-color: #fafafa; -webkit-tap-highlight-color: transparent; }
         
-        /* 카드 공통 스타일 */
-        .card-container { transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
+        /* 카드 공통 스타일 (relative 추가) */
+        .card-container { position: relative; transition: 0.3s ease; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; }
         .card-container:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: #0058a3; }
         .icon-wrapper { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #f8fafc; transition: 0.3s; }
         .card-container:hover .icon-wrapper { background-color: #0058a3; color: #ffdb00; }
         
         /* 모달 스타일 */
-        #videoModal, #stockModal { backdrop-filter: blur(4px); transition: 0.3s; z-index: 100; }
+        #videoModal, #stockModal, #loginModal { backdrop-filter: blur(4px); transition: 0.3s; z-index: 100; }
         .modal-content { transform: scale(0.9); transition: 0.3s; }
         .flex .modal-content { transform: scale(1); }
         
@@ -32,112 +32,133 @@
 </head>
 <body>
 
-    <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center">
+    <div class="absolute top-6 right-6 z-50">
+        <button id="adminLoginBtn" onclick="openLoginModal()" class="text-gray-400 hover:text-blue-800 transition text-xl">
+            <i class="fas fa-lock"></i>
+        </button>
+        <button id="adminLogoutBtn" onclick="logoutAdmin()" class="hidden text-red-500 font-bold text-sm bg-red-50 px-3 py-1 rounded-full border border-red-200 shadow-sm hover:bg-red-100 transition">
+            <i class="fas fa-sign-out-alt mr-1"></i> 관리자 로그아웃
+        </button>
+    </div>
+
+    <header class="pt-16 pb-12 px-6 max-w-6xl mx-auto text-center relative">
         <h1 class="text-4xl md:text-5xl font-black mb-4 text-blue-800 italic uppercase">STO 582 Racking</h1>
         <p class="text-gray-500 text-lg font-medium">이케아 코워커를 위한 랙킹 통합 가이드 센터</p>
     </header>
 
-    <section class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <section id="cardSection" class="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         
-        <div class="card-container" onclick="location.href='notice.html'">
-            <div class="icon-wrapper text-blue-800">
-                <i class="fas fa-bullhorn"></i>
+        <div class="card-container" data-id="card-notice" onclick="location.href='notice.html'">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-notice')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-blue-800"><i class="fas fa-bullhorn"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Specialist Notice</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">공지사항 확인 및 편집</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-        <div class="card-container" onclick="location.href='schedule.html'">
-            <div class="icon-wrapper text-blue-800">
-                <i class="fas fa-calendar-alt"></i>
+        <div class="card-container" data-id="card-schedule" onclick="location.href='schedule.html'">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-schedule')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-blue-800"><i class="fas fa-calendar-alt"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Work Schedule</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">주간 및 월간 스케줄 확인</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-<div class="card-container" onclick="window.open('https://www.appsheet.com/start/3dbbddaf-3f94-4adc-8986-c6d8b4e1ed4f', '_blank')">
-    <div class="icon-wrapper text-blue-800">
-        <i class="fas fa-boxes"></i>
-    </div>
-    <div class="p-8 flex justify-between items-center">
-        <div>
-            <h3 class="text-xl font-bold text-gray-800 uppercase">Inventory Center</h3>
-            <p class="text-xs text-gray-400 mt-1 uppercase font-bold">재고 및 로케이션 현황 (AppSheet)</p>
-        </div>
-        <i class="fas fa-external-link-alt text-gray-300"></i>
-    </div>
-</div>
-
-        <div class="card-container" onclick="location.href='manuals-list.html'">
-            <div class="icon-wrapper text-blue-600">
-                <i class="fas fa-folder-open"></i>
+        <div class="card-container" data-id="card-inventory" onclick="window.open('https://www.appsheet.com/start/3dbbddaf-3f94-4adc-8986-c6d8b4e1ed4f', '_blank')">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-inventory')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-blue-800"><i class="fas fa-boxes"></i></div>
+            <div class="p-8 flex justify-between items-center">
+                <div><h3 class="text-xl font-bold text-gray-800 uppercase">Inventory Center</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">재고 및 로케이션 현황 (AppSheet)</p></div>
+                <i class="fas fa-external-link-alt text-gray-300"></i>
+            </div>
+        </div>
+
+        <div class="card-container" data-id="card-manual" onclick="location.href='manuals-list.html'">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-manual')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
+            </div>
+            <div class="icon-wrapper text-blue-600"><i class="fas fa-folder-open"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Manual Archive</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">매뉴얼 모음</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-        <div class="card-container" onclick="openVideoModal()">
-            <div class="icon-wrapper text-red-500">
-                <i class="fas fa-play-circle"></i>
+        <div class="card-container" data-id="card-assembly" onclick="openVideoModal()">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-assembly')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-red-500"><i class="fas fa-play-circle"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Assembly Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">조립 가이드 영상</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-        <div class="card-container" onclick="location.href='location-guide.html'">
-            <div class="icon-wrapper text-green-600">
-                <i class="fas fa-map-marked-alt"></i>
+        <div class="card-container" data-id="card-location" onclick="location.href='location-guide.html'">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-location')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-green-600"><i class="fas fa-map-marked-alt"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Location Guide</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">랙킹 위치 안내</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-        <div class="card-container" onclick="location.href='safety-main.html'">
-            <div class="icon-wrapper text-teal-600">
-                <i class="fas fa-user-shield"></i>
+        <div class="card-container" data-id="card-safety" onclick="location.href='safety-main.html'">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-safety')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-teal-600"><i class="fas fa-user-shield"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Safety Center</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">안전 교육 센터</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-        <div class="card-container" onclick="location.href='troubleshooting.html'">
-            <div class="icon-wrapper text-red-600">
-                <i class="fas fa-tools"></i>
+        <div class="card-container" data-id="card-trouble" onclick="location.href='troubleshooting.html'">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-trouble')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-red-600"><i class="fas fa-tools"></i></div>
             <div class="p-8 flex justify-between items-center">
                 <div><h3 class="text-xl font-bold text-gray-800 uppercase">Troubleshooting</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">파손 및 조립 어려움 해결</p></div>
                 <i class="fas fa-arrow-right text-gray-300"></i>
             </div>
         </div>
 
-        <div class="card-container" onclick="openStockModal()">
-            <div class="icon-wrapper text-indigo-600">
-                <i class="fas fa-edit"></i>
+        <div class="card-container" data-id="card-stock" onclick="openStockModal()">
+            <div class="admin-toggle hidden absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md cursor-pointer hover:scale-110 transition" onclick="toggleCardVisibility(event, 'card-stock')">
+                <i class="fas fa-eye text-green-500 text-lg"></i>
             </div>
+            <div class="icon-wrapper text-indigo-600"><i class="fas fa-edit"></i></div>
             <div class="p-8 flex justify-between items-center">
-                <div>
-                    <h3 class="text-xl font-bold text-gray-800 uppercase">Stock Entry</h3>
-                    <p class="text-xs text-gray-400 mt-1 uppercase font-bold">랙킹 재고 입력</p>
-                </div>
+                <div><h3 class="text-xl font-bold text-gray-800 uppercase">Stock Entry</h3><p class="text-xs text-gray-400 mt-1 uppercase font-bold">랙킹 재고 입력</p></div>
                 <i class="fas fa-plus text-gray-300"></i>
             </div>
         </div>
 
     </section>
 
-    <div id="videoModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-6"><div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"><div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div><div class="p-6 space-y-3"><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">가로형 영상 (Desktop)</button><button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">세로형 영상 (Shorts)</button><button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Close</button></div></div></div>
+    <div id="videoModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-6">
+        <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+            <div class="bg-red-600 p-8 text-center text-white"><i class="fab fa-youtube text-5xl mb-3"></i><h3 class="font-black italic text-xl uppercase">Select Format</h3></div>
+            <div class="p-6 space-y-3">
+                <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3PQYhgiJzIymmjHNIgSLUG','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">가로형 영상 (Desktop)</button>
+                <button onclick="window.open('https://www.youtube.com/playlist?list=PLn2hkf3EgnF3mg96oXucuWJ1jWOnXZm77','_blank')" class="w-full py-4 bg-gray-50 font-bold rounded-2xl border flex items-center justify-center gap-3">세로형 영상 (Shorts)</button>
+                <button onclick="closeVideoModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">Close</button>
+            </div>
+        </div>
+    </div>
     
     <div id="stockModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-6">
         <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
@@ -154,12 +175,133 @@
         </div>
     </div>
 
+    <div id="loginModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-6 z-[200]">
+        <div class="modal-content bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl">
+            <div class="bg-gray-800 p-8 text-center text-white">
+                <i class="fas fa-user-shield text-5xl mb-3"></i>
+                <h3 class="font-black italic text-xl uppercase">Admin Login</h3>
+            </div>
+            <div class="p-6">
+                <input type="text" id="adminIdInput" placeholder="아이디" class="w-full border-2 border-gray-200 p-4 rounded-xl mb-3 outline-none focus:border-blue-500 transition font-bold">
+                <input type="password" id="adminPwInput" placeholder="비밀번호" class="w-full border-2 border-gray-200 p-4 rounded-xl mb-5 outline-none focus:border-blue-500 transition font-bold" onkeypress="if(event.key === 'Enter') loginAdmin()">
+                <button onclick="loginAdmin()" class="w-full py-4 bg-blue-800 text-white font-bold rounded-2xl hover:bg-blue-900 transition">로그인</button>
+                <button onclick="closeLoginModal()" class="w-full py-3 text-xs font-bold text-gray-400 uppercase mt-2">취소</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // 기본 모달 제어 함수
         function openVideoModal() { document.getElementById('videoModal').classList.replace('hidden', 'flex'); }
         function closeVideoModal() { document.getElementById('videoModal').classList.replace('flex', 'hidden'); }
-        // ✅ 3. Stock Entry 모달 함수 복구
         function openStockModal() { document.getElementById('stockModal').classList.replace('hidden', 'flex'); }
         function closeStockModal() { document.getElementById('stockModal').classList.replace('flex', 'hidden'); }
+        
+        function openLoginModal() { 
+            document.getElementById('loginModal').classList.replace('hidden', 'flex'); 
+            document.getElementById('adminIdInput').value = '';
+            document.getElementById('adminPwInput').value = '';
+            document.getElementById('adminIdInput').focus();
+        }
+        function closeLoginModal() { document.getElementById('loginModal').classList.replace('flex', 'hidden'); }
+
+        // 관리자 인증 정보
+        const ADMIN_ID = 'sto582racking';
+        const ADMIN_PW = 'Racking04**';
+
+        // 상태 변수 (localStorage 연동)
+        let isAdmin = localStorage.getItem('isAdmin') === 'true';
+        let hiddenCards = JSON.parse(localStorage.getItem('hiddenCards') || '[]');
+
+        // 로그인 처리
+        function loginAdmin() {
+            const inputId = document.getElementById('adminIdInput').value;
+            const inputPw = document.getElementById('adminPwInput').value;
+
+            if (inputId === ADMIN_ID && inputPw === ADMIN_PW) {
+                localStorage.setItem('isAdmin', 'true');
+                isAdmin = true;
+                closeLoginModal();
+                updateUI();
+            } else {
+                alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+            }
+        }
+
+        // 로그아웃 처리
+        function logoutAdmin() {
+            localStorage.removeItem('isAdmin');
+            isAdmin = false;
+            updateUI();
+        }
+
+        // 카드 숨김/표시 토글 기능
+        function toggleCardVisibility(event, cardId) {
+            event.stopPropagation(); // 카드 자체의 링크 이동(onclick) 방지
+            
+            if (hiddenCards.includes(cardId)) {
+                // 이미 숨겨진 상태면 배열에서 제거 (표시)
+                hiddenCards = hiddenCards.filter(id => id !== cardId);
+            } else {
+                // 표시된 상태면 배열에 추가 (숨김)
+                hiddenCards.push(cardId);
+            }
+            
+            // 로컬 스토리지에 저장 후 UI 갱신
+            localStorage.setItem('hiddenCards', JSON.stringify(hiddenCards));
+            updateUI();
+        }
+
+        // 화면 렌더링 (일반 유저 vs 관리자 모드)
+        function updateUI() {
+            // 헤더 버튼 전환
+            const loginBtn = document.getElementById('adminLoginBtn');
+            const logoutBtn = document.getElementById('adminLogoutBtn');
+            
+            if (isAdmin) {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+            } else {
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+
+            // 카드 렌더링 로직
+            const cards = document.querySelectorAll('.card-container');
+            cards.forEach(card => {
+                const cardId = card.getAttribute('data-id');
+                const isHidden = hiddenCards.includes(cardId);
+                const toggleBtn = card.querySelector('.admin-toggle');
+                const eyeIcon = toggleBtn.querySelector('i');
+
+                if (isAdmin) {
+                    // 관리자 모드: 모든 카드가 보이지만, 숨김 처리된 카드는 반투명(opacity) 처리
+                    card.style.display = 'block';
+                    toggleBtn.classList.remove('hidden');
+                    
+                    if (isHidden) {
+                        card.style.opacity = '0.4';
+                        eyeIcon.className = 'fas fa-eye-slash text-red-500 text-lg';
+                    } else {
+                        card.style.opacity = '1';
+                        eyeIcon.className = 'fas fa-eye text-green-500 text-lg';
+                    }
+                } else {
+                    // 일반 사용자 모드: 숨김 처리된 카드는 완전히 사라짐
+                    toggleBtn.classList.add('hidden');
+                    card.style.opacity = '1';
+                    
+                    if (isHidden) {
+                        card.style.display = 'none';
+                    } else {
+                        card.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // 페이지 로드 시 초기 렌더링
+        window.onload = updateUI;
     </script>
 </body>
 </html>
